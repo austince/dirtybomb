@@ -9,11 +9,11 @@ import GaussianPlume, {
     SourceType
 } from './GaussianPlume/GaussianPlume'
 
-const Dirtybomb = {};
+const dirtybomb = {};
 
-Dirtybomb.GaussianPlume = GaussianPlume;
-Dirtybomb.Atmosphere = Atmosphere;
-Dirtybomb.Source = Source;
-Dirtybomb.SourceType = SourceType;
+dirtybomb.GaussianPlume = GaussianPlume;
+dirtybomb.Atmosphere = Atmosphere;
+dirtybomb.Source = Source;
+dirtybomb.SourceType = SourceType;
 
-export default Dirtybomb;
+export default dirtybomb;

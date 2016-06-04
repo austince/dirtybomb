@@ -4,7 +4,7 @@
  */
 
 
-// On a scale of 1 - 7
+// On a scale of 0 - 6
 // Extremely unstable A ... DD, DN ... F Moderately Stable
 const LETTER_GRADES = ['A', 'B', 'C', 'DD', 'DN', 'E', 'F'];
 
@@ -12,24 +12,23 @@ const LETTER_GRADES = ['A', 'B', 'C', 'DD', 'DN', 'E', 'F'];
 // Maps windSpeed and skyCover to a grade
 // [<2, 2-3, 3-5, 5-6, >6] then
 // [strong, moderate, slight]
-// FIXME: Should be indexed starting at 0
 const DAY_GRADES = [
+    [0, 1, 1],
+    [1, 1, 2],
     [1, 2, 2],
-    [2, 2, 3],
     [2, 3, 3],
-    [3, 4, 4],
-    [3, 4, 4]
+    [2, 3, 3]
 ];
 
 // [skyCover >= .5, skyCover < .5]
 // Defined as one hour before sunset to one hour after sunrise
 // Todo: Account for time of day
 const NIGHT_GRADES = {
-    "<2": [4, 4], // Not given in the docs but will assume 4 / never used
-    "2-3": [6, 7],
-    "3-5": [5, 6],
-    "5-6": [5, 5],
-    ">6": [5, 5]
+    "<2": [3, 3], // Not given in the docs but will assume 4 / never used
+    "2-3": [5, 6],
+    "3-5": [4, 5],
+    "5-6": [4, 4],
+    ">6": [4, 4]
 };
 
 const WIND_PROFILES = [
@@ -50,12 +49,14 @@ class Atmosphere {
      * @param skyCover a percentage 0-1
      * @param solarElevation (degrees)
      * @param temperature (Kelvin)
+     * @param setting 
      */
-    constructor(windSpeed, skyCover, solarElevation, temperature) {
+    constructor(windSpeed, skyCover, solarElevation, temperature, setting = "urban") {
         this.windSpeed = windSpeed;
         this.skyCover = skyCover;
         this.solarElevation = solarElevation;
         this.temp = temperature;
+        this.setting = setting;
         
         let insolation = 0;
         if (skyCover <= .5) {
@@ -113,11 +114,18 @@ class Atmosphere {
      * @returns {string} A - F
      */
     getLetterGrade() {
-        return LETTER_GRADES[this.grade-1];
+        return LETTER_GRADES[this.grade];
     }
 
     getTemperature() {
         return this.temp;
+    }
+    
+    setSetting(setting) {
+        this.setting = setting;
+    }
+    getSetting() {
+        return this.setting;
     }
     
     /**
@@ -127,8 +135,9 @@ class Atmosphere {
      */
     getWindSpeedAt(height) {
         // Assumes ground wind speed was measured at 10m
-        // Will also assume for now that these are all rural areas
-        let windProfile = WIND_PROFILES[this.getGrade()].urban;
+        
+        let windProfile = this.setting === 'urban' ? 
+            WIND_PROFILES[this.getGrade()].urban : WIND_PROFILES[this.getGrade()].rural;
         return this.windSpeed * Math.pow((height / 10), windProfile);
     }
 }

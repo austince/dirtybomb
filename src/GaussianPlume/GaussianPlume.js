@@ -44,8 +44,9 @@ const STD_Z_COEFFS = [
 ];
 
 class GaussianPlume {
-    constructor(avgGroundWindSpeed, skyCover, solarElevation) {
-        this.setAtmosphere(avgGroundWindSpeed, skyCover, solarElevation);
+    constructor(atmosphere, source) {
+        this.setAtmosphere(atmosphere);
+        this.addSource(source);
     }
 
     addSource(source) {
@@ -55,8 +56,12 @@ class GaussianPlume {
         return this.source;
     }
 
-    setAtmosphere(avgGroundWindSpeed, skyCover, solarElevation) {
-        this.atmosphere = new Atmosphere(avgGroundWindSpeed, skyCover, solarElevation);
+    /**
+     * 
+     * @param atmosphere {Atmosphere}
+     */
+    setAtmosphere(atmosphere) {
+        this.atmosphere = atmosphere;
     }
     getAtmosphere() {
         return this.atmosphere;
@@ -98,7 +103,7 @@ class GaussianPlume {
     }
     
     getWindSpeedAtSourceHeight() {
-        return this.atmosphere.getWindSpeedAt(this.source.height);
+        return this.atmosphere.getWindSpeedAt(this.getEffectiveSourceHeight());
     }
     
     getMaxRise(x, ambientTemp, sourceTemp, stackExitVel, stackRad) {
@@ -118,7 +123,6 @@ class GaussianPlume {
                 x = xStar;
             }
             bDeltaH = 1.6 * Math.pow(F, .333) * Math.pow(3.5 * x, .667) * Math.pow(U, -1);
-            
             mDeltaH = (3 * stackExitVel * (2 * stackRad)) / U;
         } else {
             // stable
@@ -127,6 +131,8 @@ class GaussianPlume {
             mDeltaH = 1.5 * Math.pow(stackExitVel * stackRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
         }
         
+        console.log("bDeltaH: " + bDeltaH);
+        console.log("mDeltaH: " + mDeltaH);
         // Return the max
         if (bDeltaH > mDeltaH) {
             console.log("Buoyancy dominated.");
@@ -136,8 +142,14 @@ class GaussianPlume {
         return mDeltaH;
     }
 
+    setEffectiveSourceHeight(height) {
+        this.effSrcHeight = height;
+    }
     /* Should potentially move this to the Source class */
     getEffectiveSourceHeight() {
+        if (this.effSrcHeight) {
+            return this.effSrcHeight;
+        }
         let deltaH = this.getMaxRise(
             0,  // Shouldn't this be from 0 i.e. the origin?
             this.atmosphere.getTemperature(),
@@ -145,7 +157,8 @@ class GaussianPlume {
             this.source.getExitVelocity(),
             this.source.getRadius()
         );
-        return this.source.getHeight() + deltaH;
+        this.effSrcHeight = this.source.getHeight() + deltaH;
+        return this.effSrcHeight;
     }
     
     getMaxConcentration() {
@@ -166,7 +179,7 @@ class GaussianPlume {
         let stdZCoeffs = this.getStdZCoeffs(5000);  // a , b
         let H = this.getEffectiveSourceHeight();
 
-        let pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdYCoeffs.b));
+        let pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
         return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
     }
 

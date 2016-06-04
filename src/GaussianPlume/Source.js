@@ -14,7 +14,7 @@ const SourceType = {
 };
 
 class Source {
-    constructor(type, height, radius, emissionRate, temperature, exitVelocity) {
+    constructor(type, emissionRate, height, radius, temperature, exitVelocity) {
         this.emissionRate = emissionRate;
         this.height = height;
         this.radius = radius;
@@ -58,5 +58,6 @@ class Stack extends Source {
     }
 }
 
+export {Stack}
 export {SourceType};
 export default Source;
