@@ -55,6 +55,7 @@ class GaussianPlume {
 
     addSource(source) {
         this.source = source;
+        return this;
     }
     getSource() {
         return this.source;
@@ -66,6 +67,7 @@ class GaussianPlume {
      */
     setAtmosphere(atmosphere) {
         this.atmosphere = atmosphere;
+        return this;
     }
     getAtmosphere() {
         return this.atmosphere;
@@ -148,6 +150,7 @@ class GaussianPlume {
 
     setEffectiveSourceHeight(height) {
         this.effSrcHeight = height;
+        return this;
     }
     /* Should potentially move this to the Source class */
     getEffectiveSourceHeight() {

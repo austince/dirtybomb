@@ -129,6 +129,7 @@ class Atmosphere {
     
     setWindSpeed(speed) {
         this.windSpeed = speed;
+        return this;
     }
     getWindSpeed() {
         return this.windSpeed;
@@ -136,6 +137,7 @@ class Atmosphere {
     
     setSkyCover(cover) {
         this.skyCover = cover;
+        return this;
     }
     getSkyCover() {
         return this.skyCover;
@@ -143,6 +145,7 @@ class Atmosphere {
     
     setSolarElevation(elevation) {
         this.solarElevation = elevation;
+        return this;
     }
     getSolarElevation() {
         return this.solarElevation;
@@ -150,6 +153,7 @@ class Atmosphere {
 
     setTemperature(temp) {
         this.temp = temp;
+        return this;
     }
     getTemperature() {
         return this.temp;
@@ -157,6 +161,7 @@ class Atmosphere {
     
     setSetting(setting) {
         this.setting = setting;
+        return this;
     }
     getSetting() {
         return this.setting;

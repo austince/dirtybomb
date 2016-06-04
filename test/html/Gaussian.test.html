@@ -39,8 +39,7 @@
         console.log("Max concentration: " + plume.getMaxConcentration() + " micrograms / cubic meter.");
 
         // Problem b)
-        atm.setWindSpeed(2);
-        atm.setSolarElevation(65);
+        atm.setWindSpeed(2).setSolarElevation(65);
 
         console.log('Plume: ' + plume);
         console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
