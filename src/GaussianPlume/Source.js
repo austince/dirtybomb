@@ -23,6 +23,10 @@ class Source {
         this.exitVel = exitVelocity;
     }
 
+    toString() {
+        return "Emission rate of " + this.emissionRate + " g/s";
+    }
+
     getEmissionRate() {
         return this.emissionRate;
     }

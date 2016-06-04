@@ -57,7 +57,16 @@ class Atmosphere {
         this.solarElevation = solarElevation;
         this.temp = temperature;
         this.setting = setting;
-        
+        //this.grade = Atmosphere.calculateGrade(skyCover, solarElevation, windSpeed);
+    }
+    
+    toString() {
+        return "Grade: " + this.getLetterGrade() +
+            " Wind at " + this.windSpeed + " m/s," +
+            " Sun at " + this.solarElevation + " degrees";
+    }
+    
+    static calculateGrade(skyCover, solarElevation, windSpeed) {
         let insolation = 0;
         if (skyCover <= .5) {
             if (solarElevation > 60) {
@@ -82,41 +91,66 @@ class Atmosphere {
                 insolation = 2;
             }
         }
-
+        
+        let grade;
         if (windSpeed < 2) {
             // < 2
-            this.grade = DAY_GRADES[0][insolation];
+            grade = DAY_GRADES[0][insolation];
         } else if (windSpeed < 3) {
             // 2 - 3
-            this.grade = DAY_GRADES[1][insolation];
+            grade = DAY_GRADES[1][insolation];
         } else if (windSpeed < 5) {
             // 3 - 5
-            this.grade = DAY_GRADES[2][insolation];
+            grade = DAY_GRADES[2][insolation];
         } else if (windSpeed < 6) {
             // 5 - 6
-            this.grade = DAY_GRADES[3][insolation];
+            grade = DAY_GRADES[3][insolation];
         } else {
             // > 6
-            this.grade = DAY_GRADES[4][insolation];
+            grade = DAY_GRADES[4][insolation];
         }
+        return grade;
     }
 
     /**
      * 
-     * @returns {number} 1-7
+     * @returns {number} 0-6
      */
     getGrade() {
-        return this.grade;
+        return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.windSpeed);
     }
-
     /**
-     * 
+     *
      * @returns {string} A - F
      */
     getLetterGrade() {
-        return LETTER_GRADES[this.grade];
+        return LETTER_GRADES[this.getGrade()];
+    }
+    
+    setWindSpeed(speed) {
+        this.windSpeed = speed;
+    }
+    getWindSpeed() {
+        return this.windSpeed;
+    }
+    
+    setSkyCover(cover) {
+        this.skyCover = cover;
+    }
+    getSkyCover() {
+        return this.skyCover;
+    }
+    
+    setSolarElevation(elevation) {
+        this.solarElevation = elevation;
+    }
+    getSolarElevation() {
+        return this.solarElevation;
     }
 
+    setTemperature(temp) {
+        this.temp = temp;
+    }
     getTemperature() {
         return this.temp;
     }

@@ -9,7 +9,7 @@
     <script src="../../build/Dirtybomb.js"></script>
     <script type="text/javascript">
         // From Page 17 - 18 of http://dept.ceer.utexas.edu/ceer/che357/PDF/Lectures/gaussian_plume_modeling.pdf
-
+        // Problem a)
         var source = new dirtybomb.Source(
                 dirtybomb.SourceType.POINT, // Type of source
                 151, // emission Rate (g/s)
@@ -31,11 +31,24 @@
         var plume = new dirtybomb.GaussianPlume(atm, source);
         plume.setEffectiveSourceHeight(150);
 
-        console.log(plume);
+        console.log('Plume: ' + plume);
         console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
-        console.log("Windspeed at effective source height: " + plume.getAtmosphere().getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
+        console.log("Windspeed at effective source height: " +
+                plume.getAtmosphere().getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
         console.log("Max concentration at " + plume.getMaxConcentrationX() + " meters from source.");
         console.log("Max concentration: " + plume.getMaxConcentration() + " micrograms / cubic meter.");
+
+        // Problem b)
+        atm.setWindSpeed(2);
+        atm.setSolarElevation(65);
+
+        console.log('Plume: ' + plume);
+        console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
+        console.log("Windspeed at effective source height: " +
+                plume.getAtmosphere().getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
+        console.log("Max concentration at " + plume.getMaxConcentrationX() + " meters from source.");
+        console.log("Max concentration: " + plume.getMaxConcentration() + " micrograms / cubic meter.");
+
     </script>
 </body>
 </html>

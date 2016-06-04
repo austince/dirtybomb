@@ -48,6 +48,10 @@ class GaussianPlume {
         this.setAtmosphere(atmosphere);
         this.addSource(source);
     }
+    
+    toString() {
+        return this.source.toString() + " in " + this.atmosphere.toString();
+    }
 
     addSource(source) {
         this.source = source;
