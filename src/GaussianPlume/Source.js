@@ -23,11 +23,17 @@ class Source {
         this.exitVel = exitVelocity;
     }
 
+    getEmissionRate() {
+        return this.emissionRate;
+    }
     getHeight() {
         return this.height;
     }
     getRadius() {
         return this.radius;
+    }
+    getType() {
+        return this.type;
     }
     getTemperature() {
         return this.temp;

@@ -45,55 +45,56 @@ const STD_Z_COEFFS = [
 
 class GaussianPlume {
     constructor(avgGroundWindSpeed, skyCover, solarElevation) {
-        this.avgGroundWindSpeed = avgGroundWindSpeed;
-        this.source = null;
-        this.atmosphere = new Atmosphere(avgGroundWindSpeed, skyCover, solarElevation);
+        this.setAtmosphere(avgGroundWindSpeed, skyCover, solarElevation);
     }
 
     addSource(source) {
         this.source = source;
     }
-    
     getSource() {
         return this.source;
     }
-    
+
+    setAtmosphere(avgGroundWindSpeed, skyCover, solarElevation) {
+        this.atmosphere = new Atmosphere(avgGroundWindSpeed, skyCover, solarElevation);
+    }
     getAtmosphere() {
         return this.atmosphere;
     }
 
-    getStdY(x) {
-        let c, d;
-        
+    getStdYCoeffs(x) {
+        let index;
         let coeffs = STD_Y_COEFFS[this.atmosphere.getGrade()];
         if (x < 10000) {
-            c = coeffs[0].c;
-            d = coeffs[0].d;
+            index = 0;
         } else {
-            c = coeffs[1].c;
-            d = coeffs[1].d;
+            index = 1;
         }
-        
-        return c * Math.pow(x, d);
+        return coeffs[index];
+    }
+
+    getStdY(x) {
+        let coeffs = this.getStdYCoeffs(x);
+        return coeffs.c * Math.pow(x, coeffs.d);
+    }
+
+    getStdZCoeffs(x) {
+        let coeffs = STD_Z_COEFFS[this.atmosphere.getGrade()];
+        let index;
+        if (x <= 500) {
+            index = 0;
+        } else if (x <= 5000) {
+            index = 1;
+        } else {
+            // 5000 < x
+            index = 2;
+        }
+        return coeffs[index];
     }
 
     getStdZ(x) {
-        let a, b;
-
-        let coeffs = STD_Z_COEFFS[this.atmosphere.getGrade()];
-        if (x <= 500) {
-            a = coeffs[0].a;
-            b = coeffs[0].b;
-        } else if (x <= 5000) {
-            a = coeffs[1].a;
-            b = coeffs[1].b;
-        } else {
-            // 5000 < x
-            a = coeffs[2].a;
-            b = coeffs[2].b;
-        }
-
-        return a * Math.pow(x, b);
+        let coeffs = this.getStdZCoeffs(x);
+        return coeffs.a * Math.pow(x, coeffs.b);
     }
     
     getWindSpeedAtSourceHeight() {
@@ -134,13 +135,39 @@ class GaussianPlume {
         console.log("Momentum dominated.");
         return mDeltaH;
     }
+
+    /* Should potentially move this to the Source class */
+    getEffectiveSourceHeight() {
+        let deltaH = this.getMaxRise(
+            0,  // Shouldn't this be from 0 i.e. the origin?
+            this.atmosphere.getTemperature(),
+            this.source.getTemperature(),
+            this.source.getExitVelocity(),
+            this.source.getRadius()
+        );
+        return this.source.getHeight() + deltaH;
+    }
     
     getMaxConcentration() {
-        // Todo
+        let x = this.getMaxConcentrationX();
+        let stdY = this.getStdY(x);
+        let stdZ = this.getStdZ(x);
+        let H = this.getEffectiveSourceHeight();
+
+        let a = (this.source.getEmissionRate() * 1000000) / (Math.PI * stdY * stdZ * this.getWindSpeedAtSourceHeight());
+        let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
+
+        return a * b;
     }
     
     getMaxConcentrationX() {
-        // Todo
+        // If unknown, set x to 5000 meters
+        let stdYCoeffs = this.getStdYCoeffs(5000);  // c , d
+        let stdZCoeffs = this.getStdZCoeffs(5000);  // a , b
+        let H = this.getEffectiveSourceHeight();
+
+        let pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdYCoeffs.b));
+        return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
     }
 
     getConcentration(x, y, z) {
@@ -148,14 +175,7 @@ class GaussianPlume {
         let stdY = this.getStdY(x);
         let stdZ = this.getStdZ(x);
         // Effective stack height
-        let deltaH = this.getMaxRise(
-            x,
-            this.atmosphere.getTemperature(),
-            this.source.getTemperature(),
-            this.source.getExitVelocity(), 
-            this.source.getRadius()
-        );
-        let H = this.source.getHeight() + deltaH;
+        let H = this.getEffectiveSourceHeight();
 
         let a = this.source.emissionRate /
             (2 * Math.PI * stdY * stdZ * this.getWindSpeedAtSourceHeight());
