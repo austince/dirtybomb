@@ -8,7 +8,8 @@ Stevens Summer Scholars Research Project under Dr. Alex Wellerstein. The researc
 
 ## Building  
 Loosely trying to base this on how d3 manages its modularity.  
-- Requires node / gulp
+- Requires node / gulp / babel / all that jazz <-- These are not working yet
+- Run using npm: `npm run build`  
 
 ## Testing
 Using karma and jasmine  

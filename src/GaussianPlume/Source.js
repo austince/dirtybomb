@@ -1,5 +1,6 @@
 /**
  * Created by austin on 6/2/16.
+ * file: Source.js
  */
 
 /**
@@ -13,16 +14,43 @@ const SourceType = {
 };
 
 class Source {
-    constructor(emissionRate, height, type) {
+    constructor(type, height, radius, emissionRate, temperature, exitVelocity) {
         this.emissionRate = emissionRate;
         this.height = height;
+        this.radius = radius;
         this.type = type;
+        this.temp = temperature;
+        this.exitVel = exitVelocity;
     }
-    
-    static get SourceType() {
-        return SourceType;
+
+    getHeight() {
+        return this.height;
+    }
+    getRadius() {
+        return this.radius;
+    }
+    getTemperature() {
+        return this.temp;
+    }
+    getExitVelocity() {
+        return this.exitVel;
     }
 }
 
-// export default SourceType;
+/**
+ * Experimenting with ES6
+ */
+class Stack extends Source {
+    constructor(...args) {
+        super(...args);
+        this.emissionRate = emissionRate;
+        this.height = height;
+        this.radius = radius;
+        this.type = type;
+        this.temp = temperature;
+        this.exitVel = exitVelocity;
+    }
+}
+
+export {SourceType};
 export default Source;
