@@ -202,9 +202,19 @@ class GaussianPlume {
         let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
         let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
         let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
-
+        
         // Put it all together! get
         return a * b * (c + d);
+    }
+
+    /**
+     *
+     * @param args
+     */
+    getStatsFor(...args) {
+        if (args) {
+            
+        }
     }
 }
 

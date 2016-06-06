@@ -4,6 +4,6 @@
  * The top-level module exporter for the Dirtybomb module
  */
 
-import dirtybomb from './src/Dirtybomb';
+import Dirtybomb from './src/Dirtybomb';
 
-export default dirtybomb;
+export default Dirtybomb;
