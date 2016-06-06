@@ -190,6 +190,13 @@ class GaussianPlume {
         return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
     }
 
+    /**
+     *
+     * @param x {number} Meters downwind of source, greater than 0
+     * @param y {number} Meters crosswind of source
+     * @param z {number} Meters vertical of ground
+     * @returns {number} grams / cubic meter
+     */
     getConcentration(x, y, z) {
         // First part of Gaussian equation 1 found on page 2
         let stdY = this.getStdY(x);
@@ -208,13 +215,45 @@ class GaussianPlume {
     }
 
     /**
-     *
-     * @param args
+     * Calculates the stdY, stdZ, and concentrations for a list of x coordinates
+     *  directly downwind of the source
+     * Useful in creating graphs / processing large amounts of data at once
+     * @param xs {Array} a list of x's
+     * @returns {Array} a list of stats
      */
-    getStatsFor(...args) {
-        if (args) {
-            
+    getStatsForXs(xs) {
+        var stats = [];
+        for (let i = 0; i < xs.length; i++) {
+            stats.push({
+                x: xs[i],
+                y: 0,
+                z: 0,
+                stdY: this.getStdY(xs[i]),
+                stdZ: this.getStdZ(xs[i]),
+                concentration: this.getConcentration(xs[i], 0, 0)
+            })
         }
+        return stats;
+    }
+
+    /**
+     * Same as getStatsForXs, but for 3d coordinates
+     * @param coords {Array} a list of objects with x,y,z params
+     * @returns {Array}
+     */
+    getStatsForCoords(coords) {
+        var stats = [];
+        for (let i = 0; i < coords.length; i++) {
+            stats.push({
+                x: coords[i].x,
+                y: coords[i].y,
+                z: coords[i].z,
+                stdY: this.getStdY(xs[i]),
+                stdZ: this.getStdZ(xs[i]),
+                concentration: this.getConcentration(coords[i].x, coords[i].y, coords[i].z)
+            })
+        }
+        return stats;
     }
 }
 

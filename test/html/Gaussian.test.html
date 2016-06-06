@@ -10,56 +10,7 @@
         tests will have to do.
         -->
     <script src="../../build/Dirtybomb.js"></script>
-    <script type="text/javascript">
-        // From Page 17 - 18 of http://dept.ceer.utexas.edu/ceer/che357/PDF/Lectures/gaussian_plume_modeling.pdf
-        // Problem a)
-        console.log("----- Problem a: -----");
-        let source = new dirtybomb.Source(
-                dirtybomb.SourceType.POINT, // Type of source
-                151, // emission Rate (g/s)
-                // Not needed if setting effective source height manually
-                // Don't need these here but just for show
-                null, // height
-                null, // radius (m)
-                null, // temp (K)
-                null  // exitVelocity (m/s)
-        );
-
-        let atm = new dirtybomb.Atmosphere(
-                2.5,    // wind speed (m/s)
-                0,  // Sky cover clear ( 0 - 1 )
-                20,  // Solar elevation (degrees)
-                null, // temp (K)
-                "rural", // setting ("rural" or default: "urban")
-                false   // isNight (boolean, default: false)
-        );
-        let plume = new dirtybomb.GaussianPlume(atm, source);
-        plume.setEffectiveSourceHeight(150);
-
-        printPlumeStats(plume);
-
-        // Problem b)
-        console.log("----- Problem b: -----");
-
-        plume.getAtmosphere().setWindSpeed(2).setSolarElevation(65);
-
-        printPlumeStats(plume);
-
-        // Problem c)
-        console.log("----- Problem c: -----");
-
-        plume.getAtmosphere().setWindSpeed(7).setSolarElevation(50).setSkyCover(1);
-        printPlumeStats(plume);
-
-        // Problem d)
-        console.log("----- Problem d: -----");
-
-        plume.getAtmosphere().setWindSpeed(2.5).setSkyCover(0).setIsNight(true);
-        printPlumeStats(plume);
-
-        console.log("----- All done. Please read the README file for what this needs / is. ");
-
-
+    <script>
         function printPlumeStats(plume) {
             console.log('Plume: ' + plume);
             console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
@@ -72,6 +23,88 @@
             console.log("StdZ at MaxX: " + plume.getStdZ(maxX));
 
         }
+    </script>
+    <script type="text/javascript">
+        // From Page 17 - 18 of http://dept.ceer.utexas.edu/ceer/che357/PDF/Lectures/gaussian_plume_modeling.pdf
+        // Problem 1 a)
+        (function() {
+            console.log("----- Problem 1a: -----");
+            let source = new Dirtybomb.Source(
+                    Dirtybomb.SourceType.POINT, // Type of source
+                    151, // emission Rate (g/s)
+                    // Not needed if setting effective source height manually
+                    // Don't need these here but just for show
+                    null, // height
+                    null, // radius (m)
+                    null, // temp (K)
+                    null  // exitVelocity (m/s)
+            );
+
+            let atm = new Dirtybomb.Atmosphere(
+                    2.5,    // wind speed (m/s)
+                    0,  // Sky cover clear ( 0 - 1 )
+                    20,  // Solar elevation (degrees)
+                    null, // temp (K)
+                    "rural", // setting ("rural" or default: "urban")
+                    false   // isNight (boolean, default: false)
+            );
+            let plume = new Dirtybomb.GaussianPlume(atm, source);
+            plume.setEffectiveSourceHeight(150);
+
+            printPlumeStats(plume);
+
+            // Problem b)
+            console.log("----- Problem 1b: -----");
+
+            plume.getAtmosphere().setWindSpeed(2).setSolarElevation(65);
+
+            printPlumeStats(plume);
+
+            // Problem c)
+            console.log("----- Problem 1c: -----");
+
+            plume.getAtmosphere().setWindSpeed(7).setSolarElevation(50).setSkyCover(1);
+            printPlumeStats(plume);
+
+            // Problem d)
+            console.log("----- Problem 1d: -----");
+
+            plume.getAtmosphere().setWindSpeed(2.5).setSkyCover(0).setIsNight(true);
+            printPlumeStats(plume);
+        })();
+//        console.log("----- All done. Please read the README file for what this needs / is. ");
+    </script>
+
+    <script>
+        (function() {
+            console.log("----- Problem 2 -----");
+            let source = new Dirtybomb.Source(
+                    Dirtybomb.SourceType.POINT, // Type of source
+                    151, // emission Rate (g/s)
+                    // Not needed if setting effective source height manually
+                    // Don't need these here but just for show
+                    null, // height
+                    null, // radius (m)
+                    null, // temp (K)
+                    null  // exitVelocity (m/s)
+            );
+
+            let atm = new Dirtybomb.Atmosphere(
+                    2.5,    // wind speed (m/s)
+                    0,  // Sky cover clear ( 0 - 1 )
+                    20,  // Solar elevation (degrees)
+                    null, // temp (K)
+                    "rural", // setting ("rural" or default: "urban")
+                    false   // isNight (boolean, default: false)
+            );
+            let plume = new Dirtybomb.GaussianPlume(atm, source);
+            plume.setEffectiveSourceHeight(150);
+
+            // Get stats for 500m, 1km, 2km, 3km, 4km, 6km, 10km, 14km
+            let xs = [500, 1000, 2000, 3000, 4000, 6000, 10000, 14000];
+
+            console.log(plume.getStatsForXs(xs));
+        })();
     </script>
 </body>
 </html>

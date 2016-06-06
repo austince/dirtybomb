@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    (global.dirtybomb = factory());
+    (global.Dirtybomb = factory());
 }(this, function () { 'use strict';
 
     /**
@@ -441,6 +441,13 @@
             return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
         }
 
+        /**
+         *
+         * @param x {number} Meters downwind of source, greater than 0
+         * @param y {number} Meters crosswind of source
+         * @param z {number} Meters vertical of ground
+         * @returns {number} micrograms / cubic meter
+         */
         getConcentration(x, y, z) {
             // First part of Gaussian equation 1 found on page 2
             let stdY = this.getStdY(x);
@@ -453,19 +460,61 @@
             let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
             let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
             let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
-
+            
             // Put it all together! get
             return a * b * (c + d);
         }
+
+        /**
+         * Calculates the stdY, stdZ, and concentrations for a list of x coordinates
+         *  directly downwind of the source
+         * Useful in creating graphs / processing large amounts of data at once
+         * @param xs {Array} a list of x's
+         * @returns {Array} a list of stats
+         */
+        getStatsForXs(xs) {
+            var stats = [];
+            for (let i = 0; i < xs.length; i++) {
+                stats.push({
+                    x: xs[i],
+                    y: 0,
+                    z: 0,
+                    stdY: this.getStdY(xs[i]),
+                    stdZ: this.getStdZ(xs[i]),
+                    concentration: this.getConcentration(xs[i], 0, 0)
+                })
+            }
+            return stats;
+        }
+
+        /**
+         * Same as getStatsForXs, but for 3d coordinates
+         * @param coords {Array} a list of objects with x,y,z params
+         * @returns {Array}
+         */
+        getStatsForCoords(coords) {
+            var stats = [];
+            for (let i = 0; i < coords.length; i++) {
+                stats.push({
+                    x: coords[i].x,
+                    y: coords[i].y,
+                    z: coords[i].z,
+                    stdY: this.getStdY(xs[i]),
+                    stdZ: this.getStdZ(xs[i]),
+                    concentration: this.getConcentration(coords[i].x, coords[i].y, coords[i].z)
+                })
+            }
+            return stats;
+        }
     }
 
-    const dirtybomb = {};
+    const Dirtybomb = {};
 
-    dirtybomb.GaussianPlume = GaussianPlume;
-    dirtybomb.Atmosphere = Atmosphere;
-    dirtybomb.Source = Source;
-    dirtybomb.SourceType = SourceType;
+    Dirtybomb.GaussianPlume = GaussianPlume;
+    Dirtybomb.Atmosphere = Atmosphere;
+    Dirtybomb.Source = Source;
+    Dirtybomb.SourceType = SourceType;
 
-    return dirtybomb;
+    return Dirtybomb;
 
 }));
