@@ -112,39 +112,46 @@ class GaussianPlume {
         return this.atmosphere.getWindSpeedAt(this.getEffectiveSourceHeight());
     }
     
-    getMaxRise(x, ambientTemp, sourceTemp, stackExitVel, stackRad) {
+    getMaxRise(x) {
         // @see page 31
         // Grades 1 - 5 are assumed unstable/neutral, 6 - 7 are assumed stable
         // Both the momentum dominated and buoyancy dominated methods should be calculated, then use the max
         let bDeltaH, mDeltaH; // Max plume rise buoyancy, momentum dominated resp.
+        const srcRad = this.source.getRadius();
+        const srcTemp = this.source.getTemperature();
+        const srcHeight = this.source.getHeight();
+        const srcExitVel = this.source.getExitVelocity();
+        const ambTemp = this.atmosphere.getTemperature();
         const g = 9.8; // gravity (m/s^2)
-        const F = g * stackExitVel * Math.pow(stackRad, 2) * (sourceTemp - ambientTemp) / sourceTemp;
-        const U = this.getWindSpeedAtSourceHeight(); // wind speed at stack height
+        const F = g * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
+        const U = this.atmosphere.getWindSpeedAt(srcHeight); // wind speed at stack height
         
         if (this.atmosphere.getGrade() <= 5) {
             // unstable/neutral
             // Gets super funky, ugh science
+
+            // Distance to Maximum Plume Rise
             let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
-            if (x > 3.5 * xStar) {
+            if (x == 0 || x > 3.5 * xStar) {
                 x = xStar;
             }
             bDeltaH = 1.6 * Math.pow(F, .333) * Math.pow(3.5 * x, .667) * Math.pow(U, -1);
-            mDeltaH = (3 * stackExitVel * (2 * stackRad)) / U;
+            mDeltaH = (3 * srcExitVel * (2 * srcRad)) / U;
         } else {
             // stable
             const s = this.atmosphere.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
             bDeltaH = 2.6 * Math.pow(F / (U * s), .333);
-            mDeltaH = 1.5 * Math.pow(stackExitVel * stackRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
+            mDeltaH = 1.5 * Math.pow(srcExitVel * srcRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
         }
         
-        console.log("bDeltaH: " + bDeltaH);
-        console.log("mDeltaH: " + mDeltaH);
+        // console.log("bDeltaH: " + bDeltaH);
+        // console.log("mDeltaH: " + mDeltaH);
         // Return the max
         if (bDeltaH > mDeltaH) {
-            console.log("Buoyancy dominated.");
+            // console.log("Buoyancy dominated.");
             return bDeltaH;
         }
-        console.log("Momentum dominated.");
+        // console.log("Momentum dominated.");
         return mDeltaH;
     }
 

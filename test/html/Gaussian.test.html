@@ -106,5 +106,33 @@
             console.log(plume.getStatsForXs(xs));
         })();
     </script>
+
+    <script>
+        (function() {
+            console.log("----- Problem 4: Pg 32 -----");
+            let source = new Dirtybomb.Source(
+                    Dirtybomb.SourceType.POINT, // Type of source
+                    151, // emission Rate (g/s)
+                    // Not needed if setting effective source height manually
+                    // Don't need these here but just for show
+                    76.2, // height (m)
+                    2.285, // radius (m)
+                    450, // temp (K)
+                    7.62  // exitVelocity (m/s)
+            );
+
+            let atm = new Dirtybomb.Atmosphere(
+                    2,    // wind speed (m/s)
+                    .75,  // Sky cover clear ( 0 - 1 )
+                    65,  // Solar elevation (degrees)
+                    305, // temp (K)
+                    "rural", // setting ("rural" or default: "urban")
+                    false   // isNight (boolean, default: false)
+            );
+            let plume = new Dirtybomb.GaussianPlume(atm, source);
+
+            printPlumeStats(plume);
+        })();
+    </script>
 </body>
 </html>
