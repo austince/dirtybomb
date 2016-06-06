@@ -8,28 +8,29 @@
 // Extremely unstable A ... DD, DN ... F Moderately Stable
 const LETTER_GRADES = ['A', 'B', 'C', 'DD', 'DN', 'E', 'F'];
 
-// Overcast should always recieve a 4 (D)
+// Overcast should always receive a 3 (D)
+// From Table. 2 on Page 9, all mid grades are rounded up.
 // Maps windSpeed and skyCover to a grade
 // [<2, 2-3, 3-5, 5-6, >6] then
 // [strong, moderate, slight]
 const DAY_GRADES = [
-    [0, 1, 1],
+    [0, 0, 1],
+    [0, 1, 2],
     [1, 1, 2],
-    [1, 2, 2],
-    [2, 3, 3],
+    [2, 2, 3],
     [2, 3, 3]
 ];
 
-// [skyCover >= .5, skyCover < .5]
 // Defined as one hour before sunset to one hour after sunrise
-// Todo: Account for time of day
-const NIGHT_GRADES = {
-    "<2": [3, 3], // Not given in the docs but will assume 4 / never used
-    "2-3": [5, 6],
-    "3-5": [4, 5],
-    "5-6": [4, 4],
-    ">6": [4, 4]
-};
+// NOTE: Night Grade D is DN, 4
+// [skyCover > .5, skyCover < .5]
+const NIGHT_GRADES = [  
+    [4, 4], // No given, assumed Class D / not practically possible
+    [5, 6],
+    [4, 5],
+    [4, 4],
+    [4, 4]
+];
 
 const WIND_PROFILES = [
     {rural: 0.07, urban: 0.15},
@@ -41,6 +42,10 @@ const WIND_PROFILES = [
     {rural: 0.55, urban: 0.3}
 ];
 
+/**
+ * Represents the physical surroundings of a Gaussian Plume
+ *
+ */
 class Atmosphere {
 
     /**
@@ -49,14 +54,17 @@ class Atmosphere {
      * @param skyCover a percentage 0-1
      * @param solarElevation (degrees)
      * @param temperature (Kelvin)
-     * @param setting 
+     * @param setting
+     * @param isNight {boolean} Can change this to a Date, but should be simple enough to keep track of for the user
+     *          1 hour before sunset and 1 hour past sunrise
      */
-    constructor(windSpeed, skyCover, solarElevation, temperature, setting = "urban") {
+    constructor(windSpeed, skyCover, solarElevation, temperature, setting = "urban", isNight = false) {
         this.windSpeed = windSpeed;
         this.skyCover = skyCover;
         this.solarElevation = solarElevation;
         this.temp = temperature;
         this.setting = setting;
+        this._isNight = isNight;
         //this.grade = Atmosphere.calculateGrade(skyCover, solarElevation, windSpeed);
     }
     
@@ -65,9 +73,33 @@ class Atmosphere {
             " Wind at " + this.windSpeed + " m/s," +
             " Sun at " + this.solarElevation + " degrees";
     }
+
+    /* Static methods: these seemed more convenient at the time so one wouldn't have
+    * to build a whole Atmosphere object to calculate a grade, but now seem useless */
+
+    static getWindLevel(windSpeed) {
+        let level;
+        if (windSpeed < 2) {
+            // < 2
+            level = 0;
+        } else if (windSpeed < 3) {
+            // 2 - 3
+            level = 1;
+        } else if (windSpeed < 5) {
+            // 3 - 5;
+            level = 2;
+        } else if (windSpeed < 6) {
+            // 5 - 6
+            level = 3;
+        } else {
+            // > 6
+            level = 4;
+        }
+        return level;
+    }
     
-    static calculateGrade(skyCover, solarElevation, windSpeed) {
-        let insolation = 0;
+    static getInsolationLevel(skyCover, solarElevation) {
+        let insolation;
         if (skyCover <= .5) {
             if (solarElevation > 60) {
                 // strong
@@ -91,24 +123,20 @@ class Atmosphere {
                 insolation = 2;
             }
         }
-        
+        return insolation;
+    }
+
+    static calculateGrade(skyCover, solarElevation, windSpeed, isNight) {
         let grade;
-        if (windSpeed < 2) {
-            // < 2
-            grade = DAY_GRADES[0][insolation];
-        } else if (windSpeed < 3) {
-            // 2 - 3
-            grade = DAY_GRADES[1][insolation];
-        } else if (windSpeed < 5) {
-            // 3 - 5
-            grade = DAY_GRADES[2][insolation];
-        } else if (windSpeed < 6) {
-            // 5 - 6
-            grade = DAY_GRADES[3][insolation];
+        let windLevel = Atmosphere.getWindLevel(windSpeed);
+        if (isNight) {
+            let coverLevel = skyCover > .5 ? 0 : 1; // For night, just two columns
+            grade = NIGHT_GRADES[windLevel][coverLevel];
         } else {
-            // > 6
-            grade = DAY_GRADES[4][insolation];
+            let insolation = Atmosphere.getInsolationLevel(skyCover, solarElevation);
+            grade = DAY_GRADES[windLevel][insolation];
         }
+        
         return grade;
     }
 
@@ -117,7 +145,7 @@ class Atmosphere {
      * @returns {number} 0-6
      */
     getGrade() {
-        return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.windSpeed);
+        return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.windSpeed, this._isNight);
     }
     /**
      *
@@ -165,6 +193,14 @@ class Atmosphere {
     }
     getSetting() {
         return this.setting;
+    }
+    
+    setIsNight(isNight) {
+        this._isNight = isNight;
+        return this;
+    }
+    isNight() {
+        return this._isNight;
     }
     
     /**

@@ -32,7 +32,7 @@ const STD_Y_COEFFS = [
     [{c: .0934, d: .912}, {c: .141, d: .868}],
     [{c: .0625, d: .911}, {c: .0800, d: .884}]
 ];
-// [x <= 500, 500 < x <= 5000, 5000 < x]
+// [x < 500, 500 <= x < 5000, 5000 <= x]
 const STD_Z_COEFFS = [
     [{a: .0383, b: 1.281}, {a: .0002539, b: 2.089}, {a: .0002539, b: 2.089}],
     [{a: .1393, b: .9467}, {a: .04936, b: 1.114}, {a: .04936, b: 1.114}],
@@ -92,9 +92,9 @@ class GaussianPlume {
     getStdZCoeffs(x) {
         let coeffs = STD_Z_COEFFS[this.atmosphere.getGrade()];
         let index;
-        if (x <= 500) {
+        if (x < 500) {
             index = 0;
-        } else if (x <= 5000) {
+        } else if (x < 5000) {
             index = 1;
         } else {
             // 5000 < x

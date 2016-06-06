@@ -32,7 +32,8 @@
 
 ## Build location
 dist/
-build/
+# Keep the build in for now so others can see the compiled version
+#build/
 
 ## Library roots
 node_modules/

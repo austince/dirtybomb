@@ -6,11 +6,15 @@
     <title>Gaussian Tests</title>
 </head>
 <body>
+    <!-- Karma does not run with plain es6. Until I can get the transpiler working these brute force
+        tests will have to do.
+        -->
     <script src="../../build/Dirtybomb.js"></script>
     <script type="text/javascript">
         // From Page 17 - 18 of http://dept.ceer.utexas.edu/ceer/che357/PDF/Lectures/gaussian_plume_modeling.pdf
         // Problem a)
-        var source = new dirtybomb.Source(
+        console.log("----- Problem a: -----");
+        let source = new dirtybomb.Source(
                 dirtybomb.SourceType.POINT, // Type of source
                 151, // emission Rate (g/s)
                 // Not needed if setting effective source height manually
@@ -21,33 +25,53 @@
                 null  // exitVelocity (m/s)
         );
 
-        var atm = new dirtybomb.Atmosphere(
+        let atm = new dirtybomb.Atmosphere(
                 2.5,    // wind speed (m/s)
                 0,  // Sky cover clear ( 0 - 1 )
                 20,  // Solar elevation (degrees)
                 null, // temp (K)
-                "rural" // setting ("rural" or default: "urban")
+                "rural", // setting ("rural" or default: "urban")
+                false   // isNight (boolean, default: false)
         );
-        var plume = new dirtybomb.GaussianPlume(atm, source);
+        let plume = new dirtybomb.GaussianPlume(atm, source);
         plume.setEffectiveSourceHeight(150);
 
-        console.log('Plume: ' + plume);
-        console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
-        console.log("Windspeed at effective source height: " +
-                plume.getAtmosphere().getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
-        console.log("Max concentration at " + plume.getMaxConcentrationX() + " meters from source.");
-        console.log("Max concentration: " + plume.getMaxConcentration() + " micrograms / cubic meter.");
+        printPlumeStats(plume);
 
         // Problem b)
-        atm.setWindSpeed(2).setSolarElevation(65);
+        console.log("----- Problem b: -----");
 
-        console.log('Plume: ' + plume);
-        console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
-        console.log("Windspeed at effective source height: " +
-                plume.getAtmosphere().getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
-        console.log("Max concentration at " + plume.getMaxConcentrationX() + " meters from source.");
-        console.log("Max concentration: " + plume.getMaxConcentration() + " micrograms / cubic meter.");
+        plume.getAtmosphere().setWindSpeed(2).setSolarElevation(65);
 
+        printPlumeStats(plume);
+
+        // Problem c)
+        console.log("----- Problem c: -----");
+
+        plume.getAtmosphere().setWindSpeed(7).setSolarElevation(50).setSkyCover(1);
+        printPlumeStats(plume);
+
+        // Problem d)
+        console.log("----- Problem d: -----");
+
+        plume.getAtmosphere().setWindSpeed(2.5).setSkyCover(0).setIsNight(true);
+        printPlumeStats(plume);
+
+        console.log("----- All done. Please read the README file for what this needs / is. ");
+
+
+        function printPlumeStats(plume) {
+            console.log('Plume: ' + plume);
+            console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
+            console.log("Windspeed at effective source height: " +
+                    plume.getAtmosphere().getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
+            let maxX = plume.getMaxConcentrationX();
+            console.log("Max concentration at " + maxX + " meters from source.");
+            console.log("Max concentration: " + plume.getMaxConcentration() + " micrograms / cubic meter.");
+            console.log("StdY at MaxX: " + plume.getStdY(maxX));
+            console.log("StdZ at MaxX: " + plume.getStdZ(maxX));
+
+        }
     </script>
 </body>
 </html>
