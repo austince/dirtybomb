@@ -7,11 +7,13 @@ import GaussianPlume, {
     Atmosphere,
     Source,
     SourceType
-} from './GaussianPlume/GaussianPlume'
+} from './GaussianPlume/GaussianPlume';
+import GaussianDecayPlume from './GaussianPlume/GaussianDecayPlume';
 
 const Dirtybomb = {};
 
 Dirtybomb.GaussianPlume = GaussianPlume;
+Dirtybomb.GaussianDecayPlume = GaussianDecayPlume;
 Dirtybomb.Atmosphere = Atmosphere;
 Dirtybomb.Source = Source;
 Dirtybomb.SourceType = SourceType;

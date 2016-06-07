@@ -335,6 +335,12 @@
             return coeffs[index];
         }
 
+        /**
+         * The crosswind distance standard deviation for a distance x downwind.
+         * To be used in a Gaussian distribution
+         * @param x
+         * @returns {number}
+         */
         getStdY(x) {
             let coeffs = this.getStdYCoeffs(x);
             return coeffs.c * Math.pow(x, coeffs.d);
@@ -354,6 +360,12 @@
             return coeffs[index];
         }
 
+        /**
+         * The vertical distance standard deviation for a distance x downwind.
+         * To be used in a Gaussian distribution
+         * @param x
+         * @returns {number}
+         */
         getStdZ(x) {
             let coeffs = this.getStdZCoeffs(x);
             return coeffs.a * Math.pow(x, coeffs.b);
@@ -362,7 +374,12 @@
         getWindSpeedAtSourceHeight() {
             return this.atmosphere.getWindSpeedAt(this.getEffectiveSourceHeight());
         }
-        
+
+        /**
+         * 
+         * @param x , distance (m) downwind
+         * @returns {number}
+         */
         getMaxRise(x) {
             // @see page 31
             // Grades 1 - 5 are assumed unstable/neutral, 6 - 7 are assumed stable
@@ -383,6 +400,7 @@
 
                 // Distance to Maximum Plume Rise
                 let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
+                // Will use 0 if calculating from the source. Need to read more about this.
                 if (x == 0 || x > 3.5 * xStar) {
                     x = xStar;
                 }
@@ -415,13 +433,7 @@
             if (this.effSrcHeight) {
                 return this.effSrcHeight;
             }
-            let deltaH = this.getMaxRise(
-                0,  // Shouldn't this be from 0 i.e. the origin?
-                this.atmosphere.getTemperature(),
-                this.source.getTemperature(),
-                this.source.getExitVelocity(),
-                this.source.getRadius()
-            );
+            let deltaH = this.getMaxRise(0);
             this.effSrcHeight = this.source.getHeight() + deltaH;
             return this.effSrcHeight;
         }
@@ -515,9 +527,32 @@
         }
     }
 
+    class GaussianDecayPlume extends GaussianPlume {
+        constructor(atmosphere, source, halfLife) {
+            super(atmosphere, source);
+            this._halfLife = halfLife; // Usually the half-life of the pollutant
+            this._decayCoeff = 0.693 / halfLife;
+        }
+
+        /**
+         *
+         * @param x downwind distance (m)
+         * @param windSpeed at source height (m/s)
+         * @returns {number} Decay term
+         */
+        getDecayTerm(x, windSpeed) {
+            if (this._decayCoeff == 0) {
+                return 1;
+            } else {
+                return Math.exp(- this._decayCoeff * (x / windSpeed));
+            }
+        }
+    }
+
     const Dirtybomb = {};
 
     Dirtybomb.GaussianPlume = GaussianPlume;
+    Dirtybomb.GaussianDecayPlume = GaussianDecayPlume;
     Dirtybomb.Atmosphere = Atmosphere;
     Dirtybomb.Source = Source;
     Dirtybomb.SourceType = SourceType;
