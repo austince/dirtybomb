@@ -527,6 +527,12 @@
         }
     }
 
+    /*
+    * Understanding Radioactive Aerosols and Their Measurement
+    * https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
+    * 
+    * */
+
     class GaussianDecayPlume extends GaussianPlume {
         constructor(atmosphere, source, halfLife) {
             super(atmosphere, source);
@@ -535,7 +541,7 @@
         }
 
         /**
-         *
+         * Read URAaTM pg 285
          * @param x downwind distance (m)
          * @param windSpeed at source height (m/s)
          * @returns {number} Decay term
@@ -546,6 +552,16 @@
             } else {
                 return Math.exp(- this._decayCoeff * (x / windSpeed));
             }
+        }
+
+        /**
+         * Overridden from super class
+         * @param x
+         * @param y
+         * @param z
+         */
+        getConcentration(x, y, z) {
+            
         }
     }
 

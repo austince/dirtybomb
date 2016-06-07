@@ -1,10 +1,10 @@
 {
   "name": "dirtybomb",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A dirty bomb model",
-  "main": "src/Dirtybomb.js",
+  "main": "build/Dirtybomb.js",
   "directories": {
-    "test": "tests"
+    "test": "test"
   },
   "scripts": {
     "prebuild": "echo Building into build/ and dist/",
@@ -17,7 +17,8 @@
   },
   "keywords": [
     "Dirtybomb",
-    "Terrorism"
+    "Terrorism",
+    "Gaussian"
   ],
   "author": " <austin.cawley@gmail.com>",
   "license": "ISC",
