@@ -10,6 +10,11 @@ import GaussianPlume, {
 } from './GaussianPlume/GaussianPlume';
 import GaussianDecayPlume from './GaussianPlume/GaussianDecayPlume';
 
+/**
+ * Everything is exported through the Dirtybomb object
+ * Potentially going to export Gaussian Plumes as their own modules
+ * @type {Object}
+ */
 const Dirtybomb = {};
 
 Dirtybomb.GaussianPlume = GaussianPlume;

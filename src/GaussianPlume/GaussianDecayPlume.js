@@ -17,7 +17,7 @@ import GaussianPlume from './GaussianPlume';
 class GaussianDecayPlume extends GaussianPlume {
 
     /**
-     * 
+     * @override
      * @param {Atmosphere} atmosphere
      * @param {Source} source
      * @param {number} halfLife - seconds
@@ -28,6 +28,10 @@ class GaussianDecayPlume extends GaussianPlume {
         this._decayCoeff = 0.693 / halfLife;
     }
 
+    /**
+     * 
+     * @returns {number|*}
+     */
     getHalfLife() {
         return this._halfLife;
     }
@@ -49,6 +53,7 @@ class GaussianDecayPlume extends GaussianPlume {
     /**
      * Takes into account the decay term, as seen in URAaTM pg 281
      * Overridden from super class
+     * @override
      * @param {number} x
      * @param {number} y
      * @param {number} z

@@ -12,8 +12,33 @@ import Source, {
 } from './Source';
 import Atmosphere from './Atmosphere';
 
-// 1 - 7 for atm stab grade
-// [x < 10000, x >= 10000]
+/**
+ * @typedef {Object} Stat
+ * @property {number} x - meters downwind
+ * @property {number} y - meters crosswind
+ * @property {number} z - meters vertical
+ * @property {number} stdY
+ * @property {number} stdZ
+ * @property {number} concentration - micrograms / cubic meter
+ */
+
+/**
+ * @typedef {Object} Coord
+ * @property {number} x - meters downwind 
+ * @property {number} y - meters crosswind 
+ * @property {number} z - meters vertical 
+ */
+
+/**
+ * @typedef {Object} STD_Y_COEFF
+ * @property {number} c
+ * @property {number} d
+ */
+/**
+ * 0 - 6 for atm stab grade
+ * [x < 10000, x >= 10000]
+ *  @type {STD_Y_COEFF}
+ */
 const STD_Y_COEFFS = [
     [{c: .495, d: .873}, {c: .606, d: .851}],
     [{c: .310, d: .897}, {c: .523, d: .840}],
@@ -23,7 +48,16 @@ const STD_Y_COEFFS = [
     [{c: .0934, d: .912}, {c: .141, d: .868}],
     [{c: .0625, d: .911}, {c: .0800, d: .884}]
 ];
-// [x < 500, 500 <= x < 5000, 5000 <= x]
+
+/**
+ * @typedef {Object} STD_Z_COEFF
+ * @property {number} a
+ * @property {number} b
+ */
+/** 
+ * [x < 500, 500 <= x < 5000, 5000 <= x]
+ * @type {STD_Z_COEFF}
+ */
 const STD_Z_COEFFS = [
     [{a: .0383, b: 1.281}, {a: .0002539, b: 2.089}, {a: .0002539, b: 2.089}],
     [{a: .1393, b: .9467}, {a: .04936, b: 1.114}, {a: .04936, b: 1.114}],
@@ -36,6 +70,7 @@ const STD_Z_COEFFS = [
 
 /**
  * A Simple Gaussian Plume. For resources, please see the github repo.
+ * 
  */
 class GaussianPlume {
 
@@ -48,7 +83,11 @@ class GaussianPlume {
         this.setAtmosphere(atmosphere);
         this.addSource(source);
     }
-    
+
+    /**
+     * @override
+     * @returns {string}
+     */
     toString() {
         return '${this._source.toString()} in ${this._atmosphere.toString()}';
     }
@@ -62,12 +101,17 @@ class GaussianPlume {
         this._source = source;
         return this;
     }
+
+    /**
+     * 
+     * @returns {Source|*}
+     */
     getSource() {
         return this._source;
     }
 
     /**
-     * 
+     * @type {Atmosphere}
      * @param {Atmosphere} atmosphere
      * @returns {GaussianPlume} For chaining purposes
      */
@@ -75,6 +119,11 @@ class GaussianPlume {
         this._atmosphere = atmosphere;
         return this;
     }
+
+    /**
+     * @type {Atmosphere}
+     * @returns {Atmosphere|*}
+     */
     getAtmosphere() {
         return this._atmosphere;
     }
@@ -82,7 +131,7 @@ class GaussianPlume {
     /**
      * A helper function for the StdZ calculation
      * @param {number} x - distance downwind (m)
-     * @returns {*}
+     * @returns {STD_Y_COEFF}
      */
     _getStdYCoeffs(x) {
         let index;
@@ -109,7 +158,7 @@ class GaussianPlume {
     /**
      * A helper function for the StdZ calculation
      * @param {number} x - distance downwind (m)
-     * @returns {*}
+     * @returns {STD_Z_COEFF}
      */
     _getStdZCoeffs(x) {
         let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
@@ -135,7 +184,11 @@ class GaussianPlume {
         let coeffs = this._getStdZCoeffs(x);
         return coeffs.a * Math.pow(x, coeffs.b);
     }
-    
+
+    /**
+     * 
+     * @returns {number} m/s
+     */
     getWindSpeedAtSourceHeight() {
         return this._atmosphere.getWindSpeedAt(this.getEffectiveSourceHeight());
     }
@@ -275,8 +328,8 @@ class GaussianPlume {
      * Calculates the stdY, stdZ, and concentrations for a list of x coordinates
      *  directly downwind of the _source
      * Useful in creating graphs / processing large amounts of data at once
-     * @param {Array} xs - a list of x's
-     * @returns {Array} a list of stats
+     * @param {number[]} xs - a list of x's
+     * @returns {Stat[]} a list of stats
      */
     getStatsForXs(xs) {
         let stats = [];
@@ -295,8 +348,8 @@ class GaussianPlume {
 
     /**
      * Same as getStatsForXs, but for 3d coordinates
-     * @param {Array} coords - a list of objects with x,y,z params
-     * @returns {Array}
+     * @param {Coord[]} coords - a list of objects with x,y,z params
+     * @returns {Stat[]}
      */
     getStatsForCoords(coords) {
         let stats = [];

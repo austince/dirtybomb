@@ -28,53 +28,94 @@ class Source {
      * @param {number} exitVelocity -  m/s
      */
     constructor(type, emissionRate, height, radius, temperature, exitVelocity) {
+        /**
+         * 
+         * @type {number}
+         */
         this.emissionRate = emissionRate;
+        /**
+         * 
+         * @type {number}
+         */
         this.height = height;
+        /**
+         * 
+         * @type {number}
+         */
         this.radius = radius;
+        /**
+         * 
+         * @type {SourceType}
+         */
         this.type = type;
+        /**
+         * 
+         * @type {number}
+         */
         this.temp = temperature;
+        /**
+         * 
+         * @type {number}
+         */
         this.exitVel = exitVelocity;
     }
 
+    /**
+     * 
+     * @returns {string}
+     */
     toString() {
         return "Emission rate of " + this.emissionRate + " g/s";
     }
 
+    /**
+     * 
+     * @returns {number|*}
+     */
     getEmissionRate() {
         return this.emissionRate;
     }
+
+    /**
+     * 
+     * @returns {number|*}
+     */
     getHeight() {
         return this.height;
     }
+
+    /**
+     * 
+     * @returns {number|*}
+     */
     getRadius() {
         return this.radius;
     }
+
+    /**
+     * 
+     * @returns {SourceType|*}
+     */
     getType() {
         return this.type;
     }
+
+    /**
+     * 
+     * @returns {number|*}
+     */
     getTemperature() {
         return this.temp;
     }
+
+    /**
+     * 
+     * @returns {number|*}
+     */
     getExitVelocity() {
         return this.exitVel;
     }
 }
-
-/**
- * Experimenting with ES6
- */
-class Stack extends Source {
-    constructor(...args) {
-        super(...args);
-        this.emissionRate = emissionRate;
-        this.height = height;
-        this.radius = radius;
-        this.type = type;
-        this.temp = temperature;
-        this.exitVel = exitVelocity;
-    }
-}
-export {Stack}
 
 export {SourceType};
 export default Source;
