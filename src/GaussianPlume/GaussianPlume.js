@@ -44,7 +44,12 @@ const STD_Z_COEFFS = [
 ];
 
 class GaussianPlume {
-    
+
+    /**
+     * 
+     * @param atmosphere {Atmosphere}
+     * @param source {Source}
+     */
     constructor(atmosphere, source) {
         this.setAtmosphere(atmosphere);
         this.addSource(source);
@@ -215,7 +220,7 @@ class GaussianPlume {
      * @param x {number} Meters downwind of _source, greater than 0
      * @param y {number} Meters crosswind of _source
      * @param z {number} Meters vertical of ground
-     * @returns {number} grams / cubic meter
+     * @returns {number} micrograms / cubic meter
      */
     getConcentration(x, y, z) {
         // First part of Gaussian equation 1 found on page 2
@@ -223,9 +228,9 @@ class GaussianPlume {
         let stdZ = this.getStdZ(x);
         // Effective stack height
         let H = this.getEffectiveSourceHeight();
+        let U = this.getWindSpeedAtSourceHeight();
 
-        let a = this._source.emissionRate /
-            (2 * Math.PI * stdY * stdZ * this.getWindSpeedAtSourceHeight());
+        let a = this._source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
         let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
         let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
         let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
@@ -242,7 +247,7 @@ class GaussianPlume {
      * @returns {Array} a list of stats
      */
     getStatsForXs(xs) {
-        var stats = [];
+        let stats = [];
         for (let i = 0; i < xs.length; i++) {
             stats.push({
                 x: xs[i],
@@ -262,7 +267,7 @@ class GaussianPlume {
      * @returns {Array}
      */
     getStatsForCoords(coords) {
-        var stats = [];
+        let stats = [];
         for (let i = 0; i < coords.length; i++) {
             stats.push({
                 x: coords[i].x,
