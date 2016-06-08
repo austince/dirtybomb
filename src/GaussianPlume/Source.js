@@ -13,7 +13,20 @@ const SourceType = {
     AREA: 2
 };
 
+/**
+ * Where the contaminate comes from !
+ */
 class Source {
+    
+    /**
+     * 
+     * @param type {SourceType} The type of source 
+     * @param emissionRate {number} g/s
+     * @param height {number} m
+     * @param radius {number} m
+     * @param temperature {number} Kelvin
+     * @param exitVelocity {number} m/s
+     */
     constructor(type, emissionRate, height, radius, temperature, exitVelocity) {
         this.emissionRate = emissionRate;
         this.height = height;
@@ -61,7 +74,7 @@ class Stack extends Source {
         this.exitVel = exitVelocity;
     }
 }
-
 export {Stack}
+
 export {SourceType};
 export default Source;

@@ -11,7 +11,8 @@
  * Urban Areas
  * Single point source
  *
- * These will be accounted for later if this is not a waste of time.
+ * Created by austin on 6/6/16.
+ * @file GaussianPlume.js
  */
 
 "use strict";
@@ -43,10 +44,13 @@ const STD_Z_COEFFS = [
     [{a: .05645, b: .8050}, {a: .1930, b: .6072}, {a: 1.505, b: .3662}]
 ];
 
+/**
+ * A Simple Gaussian Plume. For resources, please see the github repo.
+ */
 class GaussianPlume {
 
     /**
-     * 
+     * For now, each Plume contains a constant atmosphere and a single Source
      * @param atmosphere {Atmosphere}
      * @param source {Source}
      */
@@ -56,9 +60,14 @@ class GaussianPlume {
     }
     
     toString() {
-        return this._source.toString() + " in " + this._atmosphere.toString();
+        return '${this._source.toString()} in ${this._atmosphere.toString()}';
     }
 
+    /**
+     * Adds a single source to the plume
+     * @param source {Source}
+     * @returns {GaussianPlume} For chaining purposes
+     */
     addSource(source) {
         this._source = source;
         return this;
@@ -70,6 +79,7 @@ class GaussianPlume {
     /**
      * 
      * @param atmosphere {Atmosphere}
+     * @returns {GaussianPlume} For chaining purposes
      */
     setAtmosphere(atmosphere) {
         this._atmosphere = atmosphere;
@@ -79,6 +89,11 @@ class GaussianPlume {
         return this._atmosphere;
     }
 
+    /**
+     * A helper function for the StdZ calculation
+     * @param x {number} distance downwind (m)
+     * @returns {*}
+     */
     getStdYCoeffs(x) {
         let index;
         let coeffs = STD_Y_COEFFS[this._atmosphere.getGrade()];
@@ -93,14 +108,19 @@ class GaussianPlume {
     /**
      * The crosswind distance standard deviation for a distance x downwind.
      * To be used in a Gaussian distribution
-     * @param x
-     * @returns {number}
+     * @param x {number} distance downwind (m)
+     * @returns {number} crosswind standard deviation at x meters downwind (m)
      */
     getStdY(x) {
         let coeffs = this.getStdYCoeffs(x);
         return coeffs.c * Math.pow(x, coeffs.d);
     }
 
+    /**
+     * A helper function for the StdZ calculation
+     * @param x {number} distance downwind (m)
+     * @returns {*}
+     */
     getStdZCoeffs(x) {
         let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
         let index;
@@ -118,7 +138,7 @@ class GaussianPlume {
     /**
      * The vertical distance standard deviation for a distance x downwind.
      * To be used in a Gaussian distribution
-     * @param x
+     * @param x {number} distance downwind (m)
      * @returns {number}
      */
     getStdZ(x) {
@@ -131,9 +151,9 @@ class GaussianPlume {
     }
 
     /**
-     * 
-     * @param x , distance (m) downwind
-     * @returns {number}
+     * The max rise of the plume at x meters downwind
+     * @param x {number} distance (m) downwind
+     * @returns {number} vertical standard deviation at x meters downwind (m)
      */
     getMaxRise(x) {
         // @see page 31
@@ -179,20 +199,33 @@ class GaussianPlume {
         return mDeltaH;
     }
 
+    /**
+     * Manually set the Effective Source Height
+     * @param height {number}
+     * @returns {GaussianPlume} For chaining purposes
+     */
     setEffectiveSourceHeight(height) {
-        this.effSrcHeight = height;
+        this._effSrcHeight = height;
         return this;
     }
-    /* Should potentially move this to the Source class */
+    /**
+     *  Takes into account the wind and other factors into account.
+     *  Should potentially move this to the Source class
+     *  @returns {number} the effective source height
+     *  */
     getEffectiveSourceHeight() {
-        if (this.effSrcHeight) {
-            return this.effSrcHeight;
+        if (this._effSrcHeight) {
+            return this._effSrcHeight;
         }
         let deltaH = this.getMaxRise(0);
-        this.effSrcHeight = this._source.getHeight() + deltaH;
-        return this.effSrcHeight;
+        this._effSrcHeight = this._source.getHeight() + deltaH;
+        return this._effSrcHeight;
     }
-    
+
+    /**
+     * Calculates the maximum concentration dispersed
+     * @returns {number} micrograms / cubic meters
+     */
     getMaxConcentration() {
         let x = this.getMaxConcentrationX();
         let stdY = this.getStdY(x);
@@ -204,7 +237,11 @@ class GaussianPlume {
 
         return a * b;
     }
-    
+
+    /**
+     * Calculates the distance downwind of the maximum concentration
+     * @returns {number} micrograms / cubic meter
+     */
     getMaxConcentrationX() {
         // If unknown, set x to 5000 meters
         let stdYCoeffs = this.getStdYCoeffs(5000);  // c , d
@@ -216,11 +253,16 @@ class GaussianPlume {
     }
 
     /**
-     *
+     * Calculates the concentration at a given x,y,z coordinate.
+     * Must be downwind
      * @param x {number} Meters downwind of _source, greater than 0
      * @param y {number} Meters crosswind of _source
      * @param z {number} Meters vertical of ground
      * @returns {number} micrograms / cubic meter
+     *
+     * @example
+     * getConcentration(200, 300, 10)
+     * Calculates at 200 meters downwind, 300 east, 10 high
      */
     getConcentration(x, y, z) {
         // First part of Gaussian equation 1 found on page 2

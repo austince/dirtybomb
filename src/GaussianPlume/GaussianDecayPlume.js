@@ -1,5 +1,6 @@
 /**
  * Created by austin on 6/6/16.
+ * @file GaussianDecayPlume.js
  */
 
 import GaussianPlume from './GaussianPlume';
@@ -10,6 +11,9 @@ import GaussianPlume from './GaussianPlume';
 * 
 * */
 
+/**
+ * 
+ */
 class GaussianDecayPlume extends GaussianPlume {
 
     /**

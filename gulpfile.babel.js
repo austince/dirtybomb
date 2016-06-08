@@ -97,7 +97,7 @@ gulp.task('compileDirty', ['clean'], function(cb) {
 /**
  * 
  */
-gulp.task('compress', ['compile'], function() {
+gulp.task('compress', ['compile'], () => {
     return gulp.src(distDir.path())
         .pipe(minify({
             ext: {
@@ -107,6 +107,11 @@ gulp.task('compress', ['compile'], function() {
             ignoreFiles: []
         }))
         .pipe(gulp.dest('dist'))
+});
+
+
+gulp.task('docs', () => {
+    
 });
 
 gulp.task('default', () => {
