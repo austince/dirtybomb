@@ -62,12 +62,12 @@ class Atmosphere {
 
     /**
      *
-     * @param windSpeed at ground level (m/s)
-     * @param skyCover a percentage 0-1
-     * @param solarElevation (degrees)
-     * @param temperature (Kelvin)
-     * @param setting
-     * @param isNight {boolean} Can change this to a Date, but should be simple enough to keep track of for the user
+     * @param {number} windSpeed at ground level (m/s)
+     * @param {number} skyCover a percentage 0-1
+     * @param {number} solarElevation (degrees)
+     * @param {number} temperature (Kelvin)
+     * @param {string} setting
+     * @param {boolean} isNight - Can change this to a Date, but should be simple enough to keep track of for the user
      *          1 hour before sunset and 1 hour past sunrise
      */
     constructor(windSpeed, skyCover, solarElevation, temperature, setting = "urban", isNight = false) {
@@ -91,8 +91,8 @@ class Atmosphere {
 
     /**
      * Helper function for grade calculation
-     * @param windSpeed {number}
-     * @returns {number} index of windLevel 
+     * @param {number} windSpeed - m/s
+     * @returns {number} index of windLevel in WIND_PROFILES
      */
     static getWindLevel(windSpeed) {
         let level;
@@ -117,9 +117,9 @@ class Atmosphere {
 
     /**
      * Helper function for grade calculation
-     * @param skyCover {number}
-     * @param solarElevation {number}
-     * @returns {*}
+     * @param {number} skyCover 
+     * @param {number} solarElevation 
+     * @returns {number} 
      */
     static getInsolationLevel(skyCover, solarElevation) {
         let insolation;
@@ -151,11 +151,11 @@ class Atmosphere {
 
     /**
      * Calculates a grade with given parameters
-     * @param skyCover {number}
-     * @param solarElevation {number}
-     * @param windSpeed {number}
-     * @param isNight {boolean}
-     * @returns {*}
+     * @param {number} skyCover 
+     * @param {number} solarElevation 
+     * @param {number} windSpeed
+     * @param {boolean} isNight 
+     * @returns {number} 0 - 6
      */
     static calculateGrade(skyCover, solarElevation, windSpeed, isNight) {
         let grade;
@@ -201,7 +201,7 @@ class Atmosphere {
 
     /**
      * The percentage of the sky is covered
-     * @param cover {number} 0 - 1
+     * @param {number} cover - 0 - 1
      * @returns {Atmosphere}
      */
     setSkyCover(cover) {
@@ -214,7 +214,7 @@ class Atmosphere {
 
     /**
      * 
-     * @param elevation {number} degrees 
+     * @param {number} elevation - degrees 
      * @returns {Atmosphere}
      */
     setSolarElevation(elevation) {
@@ -227,7 +227,7 @@ class Atmosphere {
 
     /**
      * 
-     * @param temp {number} Kelvin
+     * @param {number} temp - Kelvin
      * @returns {Atmosphere}
      */
     setTemperature(temp) {
@@ -240,7 +240,7 @@ class Atmosphere {
 
     /**
      * 
-     * @param setting {string} Either "rural" or "urban"
+     * @param {string} setting - Either "rural" or "urban"
      * @returns {Atmosphere}
      */
     setSetting(setting) {
@@ -253,7 +253,7 @@ class Atmosphere {
 
     /**
      * 
-     * @param isNight {boolean}
+     * @param {boolean} isNight
      * @returns {Atmosphere}
      */
     setIsNight(isNight) {
@@ -266,7 +266,7 @@ class Atmosphere {
     
     /**
      * Adjusts wind speed to a specific height. Approximation.
-     * @param height (m)
+     * @param {number} height - m
      * @returns {number} The approx. wind speed at a specified height above the ground (m/s)
      */
     getWindSpeedAt(height) {

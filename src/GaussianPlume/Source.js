@@ -20,12 +20,12 @@ class Source {
     
     /**
      * 
-     * @param type {SourceType} The type of source 
-     * @param emissionRate {number} g/s
-     * @param height {number} m
-     * @param radius {number} m
-     * @param temperature {number} Kelvin
-     * @param exitVelocity {number} m/s
+     * @param {SourceType} type - The type of source 
+     * @param {number} emissionRate - g/s
+     * @param {number} height - m
+     * @param {number} radius - m
+     * @param {number} temperature - Kelvin
+     * @param {number} exitVelocity -  m/s
      */
     constructor(type, emissionRate, height, radius, temperature, exitVelocity) {
         this.emissionRate = emissionRate;

@@ -12,15 +12,15 @@ import GaussianPlume from './GaussianPlume';
 * */
 
 /**
- * 
+ * An extension (surprise surprise) on the Gaussian Plume to account for radioactive materials
  */
 class GaussianDecayPlume extends GaussianPlume {
 
     /**
      * 
-     * @param atmosphere {Atmosphere}
-     * @param source {Source}
-     * @param halfLife {number} (seconds)
+     * @param {Atmosphere} atmosphere
+     * @param {Source} source
+     * @param {number} halfLife - seconds
      */
     constructor(atmosphere, source, halfLife) {
         super(atmosphere, source);
@@ -34,8 +34,8 @@ class GaussianDecayPlume extends GaussianPlume {
     
     /**
      * Read URAaTM pg 281 - 285
-     * @param x downwind distance (m)
-     * @param windSpeed at _source height (m/s)
+     * @param {number} x - downwind distance (m)
+     * @param {number} windSpeed - at source height (m/s)
      * @returns {number} Decay term
      */
     getDecayTerm(x, windSpeed) {
@@ -49,9 +49,9 @@ class GaussianDecayPlume extends GaussianPlume {
     /**
      * Takes into account the decay term, as seen in URAaTM pg 281
      * Overridden from super class
-     * @param x {number}
-     * @param y {number}
-     * @param z {number}
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
      */
     getConcentration(x, y, z) {
         let unDecayed = super.getConcentration(x, y, z);
