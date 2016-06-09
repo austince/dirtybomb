@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gaussian Tests</title>
+</head>
+<body>
+    <script src="../../build/Dirtybomb.js"></script>
+    <!--<script src="../../dist/Dirtybomb.js"></script>-->
+
+    <script>
+        (function() {
+            console.log("----- Problem 1a: -----");
+            let source = new Dirtybomb.Source(
+                    Dirtybomb.SourceType.POINT, // Type of _source
+                    151, // emission Rate (g/s)
+                    // Not needed if setting effective _source height manually
+                    // Don't need these here but just for show
+                    null, // height
+                    null, // radius (m)
+                    null, // temp (K)
+                    null  // exitVelocity (m/s)
+            );
+            let atm = new Dirtybomb.Atmosphere(
+                    2.5,    // wind speed (m/s)
+                    0,  // Sky cover clear ( 0 - 1 )
+                    20,  // Solar elevation (degrees)
+                    null, // temp (K)
+                    "rural", // setting ("rural" or default: "urban")
+                    false   // isNight (boolean, default: false)
+            );
+            let plume = new Dirtybomb.GaussianDecayPlume(
+                    atm,
+                    source,
+                    3600    // Half-life (seconds)
+            );
+            plume.setEffectiveSourceHeight(150);
+
+            console.log(lume.getConcentration(2000, 0, 0));
+
+        })();
+    </script>
+</body>
+</html>

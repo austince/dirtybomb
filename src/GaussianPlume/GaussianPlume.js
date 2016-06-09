@@ -68,9 +68,13 @@ const STD_Z_COEFFS = [
     [{a: .05645, b: .8050}, {a: .1930, b: .6072}, {a: 1.505, b: .3662}]
 ];
 
+const G = 9.8; // gravity (m/s^2)
+
 /**
  * A Simple Gaussian Plume. For resources, please see the github repo.
+ * Calculates spread for one hour with constant conditions.
  * 
+ * http://www.cerc.co.uk/environmental-software/assets/data/doc_techspec/CERC_ADMS5_P10_01_P12_01.pdf
  */
 class GaussianPlume {
 
@@ -130,6 +134,7 @@ class GaussianPlume {
 
     /**
      * A helper function for the StdZ calculation
+     * @private
      * @param {number} x - distance downwind (m)
      * @returns {STD_Y_COEFF}
      */
@@ -157,6 +162,7 @@ class GaussianPlume {
 
     /**
      * A helper function for the StdZ calculation
+     * @private
      * @param {number} x - distance downwind (m)
      * @returns {STD_Z_COEFF}
      */
@@ -194,55 +200,6 @@ class GaussianPlume {
     }
 
     /**
-     * The max rise of the plume at x meters downwind
-     * @param {number} x - distance (m) downwind
-     * @returns {number} vertical standard deviation at x meters downwind (m)
-     */
-    getMaxRise(x) {
-        // @see page 31
-        // Grades 1 - 5 are assumed unstable/neutral, 6 - 7 are assumed stable
-        // Both the momentum dominated and buoyancy dominated methods should be calculated, then use the max
-        let bDeltaH, mDeltaH; // Max plume rise buoyancy, momentum dominated resp.
-        const srcRad = this._source.getRadius();
-        const srcTemp = this._source.getTemperature();
-        const srcHeight = this._source.getHeight();
-        const srcExitVel = this._source.getExitVelocity();
-        const ambTemp = this._atmosphere.getTemperature();
-        const g = 9.8; // gravity (m/s^2)
-        const F = g * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
-        const U = this._atmosphere.getWindSpeedAt(srcHeight); // wind speed at stack height
-        
-        if (this._atmosphere.getGrade() <= 5) {
-            // unstable/neutral
-            // Gets super funky, ugh science
-
-            // Distance to Maximum Plume Rise
-            let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
-            // Will use 0 if calculating from the _source. Need to read more about this.
-            if (x == 0 || x > 3.5 * xStar) {
-                x = xStar;
-            }
-            bDeltaH = 1.6 * Math.pow(F, .333) * Math.pow(3.5 * x, .667) * Math.pow(U, -1);
-            mDeltaH = (3 * srcExitVel * (2 * srcRad)) / U;
-        } else {
-            // stable
-            const s = this._atmosphere.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
-            bDeltaH = 2.6 * Math.pow(F / (U * s), .333);
-            mDeltaH = 1.5 * Math.pow(srcExitVel * srcRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
-        }
-        
-        // console.log("bDeltaH: " + bDeltaH);
-        // console.log("mDeltaH: " + mDeltaH);
-        // Return the max
-        if (bDeltaH > mDeltaH) {
-            // console.log("Buoyancy dominated.");
-            return bDeltaH;
-        }
-        // console.log("Momentum dominated.");
-        return mDeltaH;
-    }
-
-    /**
      * Manually set the Effective Source Height
      * @param {number} height 
      * @returns {GaussianPlume} For chaining purposes
@@ -263,6 +220,61 @@ class GaussianPlume {
         let deltaH = this.getMaxRise(0);
         this._effSrcHeight = this._source.getHeight() + deltaH;
         return this._effSrcHeight;
+    }
+
+    getMeanHeight(x) {
+        // Should use integrals but need to research how to load a nicer math library in hur
+
+        // For large x this should be ok, between 0 (ground) and maxPlumeRise
+        return this.getMaxRise(x) / 2;
+    }
+
+    /**
+     * The max rise of the plume at x meters downwind
+     * @param {number} x - distance (m) downwind
+     * @returns {number} vertical standard deviation at x meters downwind (m)
+     */
+    getMaxRise(x) {
+        // @see page 31
+        // Grades 1 - 5 are assumed unstable/neutral, 6 - 7 are assumed stable
+        // Both the momentum dominated and buoyancy dominated methods should be calculated, then use the max
+        let bDeltaH, mDeltaH; // Max plume rise buoyancy, momentum dominated resp.
+        const srcRad = this._source.getRadius();
+        const srcTemp = this._source.getTemperature();
+        const srcHeight = this._source.getHeight();
+        const srcExitVel = this._source.getExitVelocity();
+        const ambTemp = this._atmosphere.getTemperature();
+        const F = g * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
+        const U = this._atmosphere.getWindSpeedAt(srcHeight); // wind speed at stack height
+
+        if (this._atmosphere.getGrade() <= 5) {
+            // unstable/neutral
+            // Gets super funky, ugh science
+
+            // Distance to Maximum Plume Rise
+            let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
+            // Will use 0 if calculating from the _source. Need to read more about this.
+            if (x == 0 || x > 3.5 * xStar) {
+                x = xStar;
+            }
+            bDeltaH = 1.6 * Math.pow(F, .333) * Math.pow(3.5 * x, .667) * Math.pow(U, -1);
+            mDeltaH = (3 * srcExitVel * (2 * srcRad)) / U;
+        } else {
+            // stable
+            const s = this._atmosphere.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
+            bDeltaH = 2.6 * Math.pow(F / (U * s), .333);
+            mDeltaH = 1.5 * Math.pow(srcExitVel * srcRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
+        }
+
+        // console.log("bDeltaH: " + bDeltaH);
+        // console.log("mDeltaH: " + mDeltaH);
+        // Return the max
+        if (bDeltaH > mDeltaH) {
+            // console.log("Buoyancy dominated.");
+            return bDeltaH;
+        }
+        // console.log("Momentum dominated.");
+        return mDeltaH;
     }
 
     /**

@@ -60,7 +60,7 @@ class GaussianDecayPlume extends GaussianPlume {
      */
     getConcentration(x, y, z) {
         let unDecayed = super.getConcentration(x, y, z);
-        let decayTerm = this.getDecayTerm(x, this._atmosphere.getWindSpeed());
+        let decayTerm = this.getDecayTerm(x, this.getAtmosphere().getWindSpeed());
         return unDecayed * decayTerm;
     }
 }

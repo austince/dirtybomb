@@ -21,7 +21,7 @@ class Source {
     /**
      * 
      * @param {SourceType} type - The type of source 
-     * @param {number} emissionRate - g/s
+     * @param {number} emissionRate - Maximum hourly emissions rate in g/s
      * @param {number} height - m
      * @param {number} radius - m
      * @param {number} temperature - Kelvin

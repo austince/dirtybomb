@@ -7,10 +7,14 @@
     "test": "test"
   },
   "scripts": {
-    "prebuild": "echo Building into build/ and dist/",
+    "clean": "rm -rf build dist",
+    "prebuild": "npm run clean && echo Building into build/ and dist/",
     "build": "sh build.sh",
+    "predoc": "npm run build",
     "doc": "esdoc -c esdoc.json",
-    "test": "echo \"Error: no test specified!\" && exit 1"
+    "postinstall": "npm run doc",
+    "test": "node_modules/.bin/mocha --compilers js:babel-core/register",
+    "prepublish": "npm run build && npm run test"
   },
   "repository": {
     "type": "git",
@@ -33,6 +37,7 @@
     "babel-cli": "^6.9.0",
     "babel-core": "^6.7.4",
     "babel-preset-es2015": "^6.9.0",
+    "chai": "^3.5.0",
     "esdoc": "^0.4.7",
     "fs-jetpack": "^0.9.1",
     "gulp": "^3.9.1",
@@ -42,11 +47,7 @@
     "gulp-rollup": "^1.9.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
-    "jasmine-core": "^2.4.1",
-    "karma": "^0.13.22",
-    "karma-chrome-launcher": "^1.0.1",
-    "karma-jasmine": "^1.0.2",
-    "karma-phantomjs-launcher": "^1.0.0",
+    "mocha": "^2.5.3",
     "phantomjs-prebuilt": "^2.1.7",
     "rollup": "^0.26.3",
     "rollup-plugin-babel": "^2.4.0"

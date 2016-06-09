@@ -30,6 +30,9 @@
 
 .idea/
 
+## Documentation should be generated on install (?)
+docs/
+
 ## Build location
 dist/
 # Keep the build in for now so others can see the compiled version
@@ -37,3 +40,5 @@ dist/
 
 ## Library roots
 node_modules/
+
+*.log
