@@ -78,22 +78,6 @@ class GaussianPuff extends GaussianPlume {
     }
 
     /**
-     * Only for sources with finite dimensions.
-     * See reference @formula (4.1)
-     * @see http://www.cerc.co.uk/environmental-software/assets/data/doc_techspec/CERC_ADMS5_P10_01_P12_01.pdf pg 12
-     * @param {number} t
-     * @returns {number}
-     */
-    getPlumeRiseSpread(t) {
-        let x = this.getCenter(t);
-        let windSpeed = this.getWindSpeedAtSourceHeight();
-        let stdYTerm = Math.pow(this.getStdY(x), 2);
-        let sigmaYWTerm = Math.pow(0.065 * x * Math.sqrt(7 * this.getSamplingTime() / windSpeed), 2);
-        let srcDiamTerm = Math.pow(this.getSource().getRadius(), 2) / 4;
-        return Math.sqrt(stdYTerm - sigmaYWTerm - srcDiamTerm);
-    }
-
-    /**
      * The center at x meters downstream after t seconds
      * @param {number} t - seconds after release
      * @returns {number}

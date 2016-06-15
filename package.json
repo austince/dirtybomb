@@ -1,8 +1,8 @@
 {
   "name": "dirtybomb",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A dirty bomb model",
-  "main": "build/Dirtybomb.js",
+  "main": "dist/Dirtybomb.js",
   "directories": {
     "test": "test"
   },
@@ -10,9 +10,10 @@
     "clean": "rm -rf build dist",
     "prebuild": "npm run clean && echo Building into build/ and dist/",
     "build": "sh build.sh",
-    "predoc": "npm run build",
+    "predoc": "npm run build && rm -rf docs",
     "doc": "esdoc -c esdoc.json",
     "postinstall": "npm run doc",
+    "pretest": "npm run build",
     "test": "node_modules/.bin/mocha --compilers js:babel-core/register",
     "prepublish": "npm run build && npm run test"
   },
@@ -34,7 +35,7 @@
   "dependencies": {},
   "devDependencies": {
     "babel": "^6.5.2",
-    "babel-cli": "^6.9.0",
+    "babel-cli": "^6.10.1",
     "babel-core": "^6.7.4",
     "babel-preset-es2015": "^6.9.0",
     "chai": "^3.5.0",
