@@ -81,7 +81,7 @@ class DynamicGaussianPuff extends GaussianPuff {
      * 
      * @returns {number}
      */
-    getTime() {
+    get time() {
         return this._currentTime;
     }
 

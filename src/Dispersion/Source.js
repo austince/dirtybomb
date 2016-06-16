@@ -117,5 +117,7 @@ class Source {
     }
 }
 
+Source.SourceType = SourceType;
+
 export {SourceType};
 export default Source;

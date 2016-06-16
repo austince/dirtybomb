@@ -74,3 +74,5 @@ class DynamicGaussianDecayPuff extends DynamicGaussianPuff {
         return unDecayed * decayTerm;
     }
 }
+
+export default DynamicGaussianDecayPuff;
