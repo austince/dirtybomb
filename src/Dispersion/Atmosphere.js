@@ -3,6 +3,8 @@
  * @file Atmosphere.js
  */
 
+import Vector from './Vector';
+
 /**
  * On a scale of 0 - 6
  * Extremely unstable A ... DD, DN ... F Moderately Stable
@@ -13,7 +15,7 @@ const LETTER_GRADES = ['A', 'B', 'C', 'DD', 'DN', 'E', 'F'];
 /**
  * Overcast should always receive a 3 (D)
  * From Table. 2 on Page 9, all mid grades are rounded up.
- * Maps windSpeed and skyCover to a grade
+ * Maps windSpeedVec and skyCover to a grade
  * [<2, 2-3, 3-5, 5-6, >6] then
  * [strong, moderate, slight]
  * @type {number[][]}
@@ -65,7 +67,7 @@ class Atmosphere {
      * Only windSpeed, skyCover, and solarElevation are required.
      * Temperature is required when not setting effective source height manually
      * The default is urban daytime.
-     * @param {number} windSpeed at ground level (m/s)
+     * @param {array | number} windSpeed at ground level (m/s)
      * @param {number} skyCover a percentage 0-1
      * @param {number} solarElevation (degrees)
      * @param {number} temperature (Kelvin)
@@ -76,9 +78,9 @@ class Atmosphere {
     constructor(windSpeed, skyCover, solarElevation, temperature, setting = "urban", isNight = false) {
         /**
          * 
-         * @type {number}
+         * @type {Vector}
          */
-        this.windSpeed = windSpeed;
+        this.windSpeedVec = Array.isArray(windSpeed) ? Vector.fromArray(windSpeed) : new Vector(windSpeed);
         /**
          * 
          * @type {number}
@@ -105,7 +107,7 @@ class Atmosphere {
          * @private
          */
         this._isNight = isNight;
-        //this.grade = Atmosphere.calculateGrade(skyCover, solarElevation, windSpeed);
+        //this.grade = Atmosphere.calculateGrade(skyCover, solarElevation, windSpeedVec);
     }
 
     /**
@@ -114,7 +116,7 @@ class Atmosphere {
      */
     toString() {
         return "Grade: " + this.getLetterGrade() +
-            " Wind at " + this.windSpeed + " m/s," +
+            " Wind at " + this.getWindSpeed() + " m/s," +
             " Sun at " + this.solarElevation + " degrees";
     }
 
@@ -201,17 +203,17 @@ class Atmosphere {
             let insolation = Atmosphere._getInsolationLevel(skyCover, solarElevation);
             grade = DAY_GRADES[windLevel][insolation];
         }
-        
         return grade;
     }
-
+    
     /**
      * 
      * @returns {number} 0-6
      */
     getGrade() {
-        return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.windSpeed, this._isNight);
+        return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.getWindSpeed(), this._isNight);
     }
+    
     /**
      * The Human readable
      * @returns {string} A - F
@@ -222,20 +224,20 @@ class Atmosphere {
 
     /**
      * 
-     * @param speed {number} m/s
+     * @param speed {array|number} m/s
      * @returns {Atmosphere}
      */
     setWindSpeed(speed) {
-        this.windSpeed = speed;
+        this.windSpeedVec = Array.isArray(speed) ? Vector.fromArray(speed) : new Vector(speed);
         return this;
     }
 
     /**
      * 
-     * @returns {number|*} m/s
+     * @returns {number} m/s
      */
     getWindSpeed() {
-        return this.windSpeed;
+        return this.windSpeedVec.abs();
     }
 
     /**
@@ -250,7 +252,7 @@ class Atmosphere {
 
     /**
      * 
-     * @returns {number|*}
+     * @returns {number}
      */
     getSkyCover() {
         return this.skyCover;
@@ -268,7 +270,7 @@ class Atmosphere {
 
     /**
      * 
-     * @returns {number|*} degrees
+     * @returns {number} degrees
      */
     getSolarElevation() {
         return this.solarElevation;
@@ -337,7 +339,7 @@ class Atmosphere {
         // Assumes ground wind speed was measured at 10m
         let windProfile = this.setting === 'urban' ? 
             WIND_PROFILES[this.getGrade()].urban : WIND_PROFILES[this.getGrade()].rural;
-        return this.windSpeed * Math.pow((height / 10), windProfile);
+        return this.getWindSpeed() * Math.pow((height / 10), windProfile);
     }
 }
 

@@ -327,7 +327,7 @@ class GaussianPlume {
         let H = this.getEffectiveSourceHeight();
         let U = this.getWindSpeedAtSourceHeight();
 
-        let a = this._source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
+        let a = this._source.getEmissionRate() / (2 * Math.PI * stdY * stdZ * U);
         let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
         let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
         let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));

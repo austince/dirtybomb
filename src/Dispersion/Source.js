@@ -20,7 +20,7 @@ class Source {
     
     /**
      * 
-     * @param {SourceType} type - The type of source 
+     * @param {number} type - The type of source 
      * @param {number} emissionRate - Maximum hourly emissions rate in g/s
      * @param {number} height - m
      * @param {number} radius - m

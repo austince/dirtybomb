@@ -31,7 +31,7 @@ gulp.task('clean', function() {
 /*
 gulp.task('compileGaussian', ['clean'], function(cb) {
     /!*rollup({
-        entry: 'src/GaussianPlume/GaussianPlume.js',
+        entry: 'src/Dispersion/Dispersion.js',
         plugins: [
             babel({
                 exclude: 'node_modules/!**'
@@ -40,11 +40,11 @@ gulp.task('compileGaussian', ['clean'], function(cb) {
     }).then(function(bundle) {
         "use strict";
         bundle.write({
-            dest: 'dist/GaussianPlume.js',
+            dest: 'dist/Dispersion.js',
             sourceMap: true
         })
     });*!/
-    /!*exec('rollup -f umd -n gaussianPlume -o dist/GaussianPlume.js -- src/GaussianPlume/GaussianPlume.js',
+    /!*exec('rollup -f umd -n gaussianPlume -o dist/Dispersion.js -- src/Dispersion/Dispersion.js',
         {cwd: __dirname}, 
         function(error, stdout, stderr) {
             if (error) {

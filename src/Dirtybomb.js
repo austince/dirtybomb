@@ -7,8 +7,8 @@ import GaussianPlume, {
     Atmosphere,
     Source,
     SourceType
-} from './GaussianPlume/GaussianPlume';
-import GaussianDecayPlume from './GaussianPlume/GaussianDecayPlume';
+} from './Dispersion/GaussianPlume';
+import GaussianDecayPlume from './Dispersion/GaussianDecayPlume';
 
 /**
  * Everything is exported through the Dirtybomb object

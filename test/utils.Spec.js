@@ -2,7 +2,7 @@
  * Created by austin on 6/8/16.
  */
 "use strict";
-import {integrate} from '../src/GaussianPlume/utils';
+import {integrate} from '../src/Dispersion/utils';
 import chai from 'chai';
 
 chai.should();

@@ -4,7 +4,7 @@
 "use strict";
 import chai from 'chai';
 
-import Atmosphere from '../src/GaussianPlume/Atmosphere';
+import Atmosphere from '../src/Dispersion/Atmosphere';
 
 chai.should();
 
