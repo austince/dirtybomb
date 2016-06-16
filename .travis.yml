@@ -9,5 +9,5 @@ os:
 install:
   - npm install
 script:
-  - npm build
-  - npm docs
+  - npm run build
+  - npm run docs

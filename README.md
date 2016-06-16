@@ -1,4 +1,4 @@
-# dirtybomb [![Build Status][buildBadge]][travis]
+# dirtybomb [![Build Status][buildBadge]][travis] [![Doc Status][docsBadge]][esdocs]
 Stevens Summer Scholars Research Project under [Dr. Alex Wellerstein](http://blog.nuclearsecrecy.com/).
 The research aims to create a client-side library to model the impact of a dirty bomb.  
 Written in ES6.  
@@ -37,6 +37,8 @@ Using esdoc. You should be able to create some nice documentation yourself with 
 - [Understanding Radioactive Aerosols and Their Measurement][URAaTM]
 
 
+[docsBadge]: https://doc.esdoc.org/github.com/austincawley/dirtybomb/badge.svg
+[esdocs]: https://doc.esdoc.org/github.com/austincawley/dirtybomb/
 [buildBadge]: https://travis-ci.org/austincawley/dirtybomb.svg?branch=master
 [travis]: https://travis-ci.org/austincawley/dirtybomb
 [URAaTM]: https://goo.gl/ZqFHiE
