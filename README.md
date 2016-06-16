@@ -10,7 +10,7 @@ __Use in node:__ use the rolled up files in the dist/ directory. It has been bab
 The plume model is working fine for steady-state plumes. Will now be branching out towards alternatives 
 that try to account for changing atmospheres. A typical method is puffs, where the plume is broken up into
 small segments.  
-[Page 287][1] has some good stuff.  
+[Page 287][URAaTM] has some good stuff.  
 
 Puff Models:  
 - [CALPUFF][2]
@@ -34,8 +34,11 @@ Using esdoc. You should be able to create some nice documentation yourself with 
 - `npm run doc`
 
 ## Resources
-[1]: https://goo.gl/ZqFHiE
+- [Understanding Radioactive Aerosols and Their Measurement][URAaTM]
+
+
+
+
+[URAaTM]: https://goo.gl/ZqFHiE
 [2]: http://www.src.com/
 [3]: http://www.sciencedirect.com/science/article/pii/S0093641303000247
-
-[doc

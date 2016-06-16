@@ -26,7 +26,7 @@
         
         /**
          * 
-         * @param {SourceType} type - The type of source 
+         * @param {number} type - The type of source 
          * @param {number} emissionRate - Maximum hourly emissions rate in g/s
          * @param {number} height - m
          * @param {number} radius - m
@@ -501,7 +501,7 @@
 
         /**
          * 
-         * @param speed {array|number} m/s
+         * @param speed {number[]|number} m/s
          * @returns {Atmosphere}
          */
         setWindSpeed(speed) {
@@ -509,6 +509,14 @@
             return this;
         }
 
+        /**
+         * 
+         * @returns {Vector|*}
+         */
+        getWindSpeedVec() {
+            return this.windSpeedVec;
+        }
+        
         /**
          * 
          * @returns {number} m/s
@@ -742,7 +750,7 @@
 
         /**
          * A helper function for the StdZ calculation
-         * @private
+         * @protected
          * @param {number} x - distance downwind (m)
          * @returns {STD_Y_COEFF}
          */
@@ -758,6 +766,7 @@
         }
 
         /**
+         * Brookhaven sigma
          * The crosswind distance standard deviation for a distance x downwind.
          * To be used in a Gaussian distribution
          * @param {number} x - distance downwind (m)
@@ -770,13 +779,13 @@
 
         /**
          * A helper function for the StdZ calculation
-         * @private
+         * @protected
          * @param {number} x - distance downwind (m)
          * @returns {STD_Z_COEFF}
          */
         _getStdZCoeffs(x) {
-            let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
             let index;
+            let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
             if (x < 500) {
                 index = 0;
             } else if (x < 5000) {
@@ -789,6 +798,7 @@
         }
 
         /**
+         * Brookhaven sigma
          * The vertical distance standard deviation for a distance x downwind.
          * To be used in a Gaussian distribution
          * @param {number} x - distance downwind (m)
@@ -830,6 +840,11 @@
             return this._effSrcHeight;
         }
 
+        /**
+         * 
+         * @param x
+         * @returns {number}
+         */
         getMeanHeight(x) {
             // Should use integrals but need to research how to load a nicer math library in hur
 
