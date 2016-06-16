@@ -1,4 +1,4 @@
-# dirtybomb
+# dirtybomb [![Build Status][buildBadge]][travis]
 Stevens Summer Scholars Research Project under [Dr. Alex Wellerstein](http://blog.nuclearsecrecy.com/).
 The research aims to create a client-side library to model the impact of a dirty bomb.  
 Written in ES6.  
@@ -37,8 +37,8 @@ Using esdoc. You should be able to create some nice documentation yourself with 
 - [Understanding Radioactive Aerosols and Their Measurement][URAaTM]
 
 
-
-
+[buildBadge]: https://travis-ci.org/austincawley/dirtybomb.svg?branch=master
+[travis]: https://travis-ci.org/austincawley/dirtybomb
 [URAaTM]: https://goo.gl/ZqFHiE
 [2]: http://www.src.com/
 [3]: http://www.sciencedirect.com/science/article/pii/S0093641303000247
