@@ -1,8 +1,11 @@
 language: node_js
 node_js:
   - "6"
-  - "4.2.x"
-
+  - "5"
+  - "4.2.6"
+os:
+  - linux
+  - osx
 install:
   - npm install
 script:
