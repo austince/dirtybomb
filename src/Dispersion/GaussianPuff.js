@@ -70,6 +70,7 @@ class GaussianPuff extends GaussianPlume {
      * @param {number} y - crosswind (m)
      * @param {number} z - height (m)
      * @param {number} t - seconds from start
+     * @returns {number}
      */
     getConcentration(x, y, z, t) {
         let deltaD = this.getCenterX(t);

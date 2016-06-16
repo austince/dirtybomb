@@ -1,22 +1,26 @@
 /**
- * Created by austin on 6/8/16.
+ * Created by austin on 6/16/16.
+ * @file DynamicGaussianDecayPuff.js
+ * 
  */
 
-import GaussianPuff from './GaussianPuff';
+import DynamicGaussianPuff from './DynamicGaussianPuff';
 
 /**
- * Adds decay to the Simple Gaussian Puff
+ * Adds half life decay to the Dynamic Puff
  */
-class GaussianDecayPuff extends GaussianPuff {
+class DynamicGaussianDecayPuff extends DynamicGaussianPuff {
+
     /**
      *
      * @param {Atmosphere} atmosphere
      * @param {Source} source
      * @param {number} massReleased
      * @param {number} halfLife - seconds
+     * @param {array} [center] - Manually set the center, defaults to (0,0,0)
      */
-    constructor(atmosphere, source, massReleased, halfLife) {
-        super(atmosphere, source, massReleased);
+    constructor(atmosphere, source, massReleased, halfLife, center) {
+        super(atmosphere, source, massReleased, center);
 
         /**
          *
@@ -26,7 +30,7 @@ class GaussianDecayPuff extends GaussianPuff {
         this._halfLife = halfLife; // Usually the half-life of the pollutant
 
         /**
-         * 
+         *
          * @type {number}
          * @private
          */
@@ -55,7 +59,7 @@ class GaussianDecayPuff extends GaussianPuff {
             return Math.exp(- this._decayCoeff * (x / windSpeed));
         }
     }
-
+    
     /**
      * Takes into account the decay term, as seen in URAaTM pg 281
      * @see https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
@@ -63,13 +67,10 @@ class GaussianDecayPuff extends GaussianPuff {
      * @param {number} x - downwind (m)
      * @param {number} y - crosswind (m)
      * @param {number} z - height (m)
-     * @param {number} t - seconds from start
      */
-    getConcentration(x, y, z, t) {
-        let unDecayed = super.getConcentration(x, y, z, t);
+    getConcentration(x, y, z) {
+        let unDecayed = super.getConcentration(x, y, z);
         let decayTerm = this.getDecayTerm(x, this.getAtmosphere().getWindSpeed());
         return unDecayed * decayTerm;
     }
 }
-
-export default GaussianDecayPuff;

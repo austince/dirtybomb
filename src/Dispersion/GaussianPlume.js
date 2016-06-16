@@ -134,7 +134,7 @@ class GaussianPlume {
 
     /**
      * A helper function for the StdZ calculation
-     * @private
+     * @protected
      * @param {number} x - distance downwind (m)
      * @returns {STD_Y_COEFF}
      */
@@ -150,6 +150,7 @@ class GaussianPlume {
     }
 
     /**
+     * Brookhaven sigma
      * The crosswind distance standard deviation for a distance x downwind.
      * To be used in a Gaussian distribution
      * @param {number} x - distance downwind (m)
@@ -162,13 +163,13 @@ class GaussianPlume {
 
     /**
      * A helper function for the StdZ calculation
-     * @private
+     * @protected
      * @param {number} x - distance downwind (m)
      * @returns {STD_Z_COEFF}
      */
     _getStdZCoeffs(x) {
-        let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
         let index;
+        let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
         if (x < 500) {
             index = 0;
         } else if (x < 5000) {
@@ -181,6 +182,7 @@ class GaussianPlume {
     }
 
     /**
+     * Brookhaven sigma
      * The vertical distance standard deviation for a distance x downwind.
      * To be used in a Gaussian distribution
      * @param {number} x - distance downwind (m)
@@ -222,6 +224,11 @@ class GaussianPlume {
         return this._effSrcHeight;
     }
 
+    /**
+     * 
+     * @param x
+     * @returns {number}
+     */
     getMeanHeight(x) {
         // Should use integrals but need to research how to load a nicer math library in hur
 

@@ -10,7 +10,6 @@
     "clean": "rm -rf build dist",
     "prebuild": "npm run clean && echo Building into build/ and dist/",
     "build": "sh build.sh",
-    "predoc": "npm run build && rm -rf docs",
     "doc": "node_modules/.bin/esdoc -c esdoc.json",
     "postdoc": "node_modules/.bin/hs docs",
     "postinstall": "npm run doc",

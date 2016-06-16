@@ -37,3 +37,5 @@ Using esdoc. You should be able to create some nice documentation yourself with 
 [1]: https://goo.gl/ZqFHiE
 [2]: http://www.src.com/
 [3]: http://www.sciencedirect.com/science/article/pii/S0093641303000247
+
+[doc

@@ -224,7 +224,7 @@ class Atmosphere {
 
     /**
      * 
-     * @param speed {array|number} m/s
+     * @param speed {number[]|number} m/s
      * @returns {Atmosphere}
      */
     setWindSpeed(speed) {
@@ -232,6 +232,14 @@ class Atmosphere {
         return this;
     }
 
+    /**
+     * 
+     * @returns {Vector|*}
+     */
+    getWindSpeedVec() {
+        return this.windSpeedVec;
+    }
+    
     /**
      * 
      * @returns {number} m/s
