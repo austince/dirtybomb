@@ -67,15 +67,16 @@ class Atmosphere {
      * Only windSpeed, skyCover, and solarElevation are required.
      * Temperature is required when not setting effective source height manually
      * The default is urban daytime.
-     * @param {array | number} windSpeed at ground level (m/s)
-     * @param {number} skyCover a percentage 0-1
-     * @param {number} solarElevation (degrees)
-     * @param {number} temperature (Kelvin)
+     * @param {array | number} windSpeed - at ground level (m/s)
+     * @param {number} skyCover - a percentage 0-1
+     * @param {number} solarElevation - (degrees)
+     * @param {number} temperature - (Kelvin)
+     * @param {number} pressure - (atm)
      * @param {string} [setting="urban"]
      * @param {boolean} [isNight=false] - Can change this to a Date, but should be simple enough to keep track of for the user
      *          1 hour before sunset and 1 hour past sunrise
      */
-    constructor(windSpeed, skyCover, solarElevation, temperature, setting = "urban", isNight = false) {
+    constructor(windSpeed, skyCover, solarElevation, temperature, pressure = 1, setting = "urban", isNight = false) {
         /**
          * 
          * @type {Vector}
@@ -96,6 +97,11 @@ class Atmosphere {
          * @type {number}
          */
         this.temp = temperature;
+        /**
+         * 
+         * @type {number}
+         */
+        this._pressure = pressure;
         /**
          * 
          * @type {string}
@@ -300,6 +306,24 @@ class Atmosphere {
      */
     getTemperature() {
         return this.temp;
+    }
+
+    /**
+     * 
+     * @param pressure
+     * @returns {Atmosphere}
+     */
+    setPressure(pressure) {
+        this._pressure = pressure;
+        return this;
+    }
+
+    /**
+     * 
+     * @returns {number}
+     */
+    get pressure() {
+        return this._pressure;
     }
 
     /**

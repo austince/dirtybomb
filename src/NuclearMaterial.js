@@ -10,17 +10,17 @@ class NuclearMaterial {
     /**
      *
      * @param {number|string} halfLifeOrPreset - either
-     * @param {number} molarMass - 
-     * @param {number} mass - Total mass of substance 
+     * @param {number} mass - Total mass of substance
+     * @param {number} [molarMass] 
      */
-    constructor(halfLifeOrPreset, molarMass, mass) {
+    constructor(halfLifeOrPreset, mass, molarMass) {
         if (typeof halfLifeOrPreset === 'number') {
             this._halfLife = halfLifeOrPreset;
         } else {
             this._halfLife = 0; // Map to known substances
         }
+        
         /**
-         * 
          * @type {number}
          * @private
          */
@@ -32,11 +32,18 @@ class NuclearMaterial {
          */
         this._mass = mass;
     }
+    
+    get mass() {
+        return this._mass;
+    }
 
+    get molarMass() {
+        return this._molarMass;
+    }
+    
     get halfLife() {
         return this._halfLife;
     }
-
 }
 
 export default NuclearMaterial;

@@ -5,12 +5,12 @@
 
 /**
  * Currently only supporting Point sources
- * @type {{POINT: number, VOLUME: number, AREA: number}}
+ * @type {{POINT: string, VOLUME: string, AREA: string}}
  */
 const SourceType = {
-    POINT: 0,
-    VOLUME: 1,
-    AREA: 2
+    POINT: 'point',
+    VOLUME: 'volume',
+    AREA: 'area'
 };
 
 /**
@@ -46,8 +46,9 @@ class Source {
         /**
          * 
          * @type {SourceType}
+         * @private
          */
-        this.type = type;
+        this._type = type;
         /**
          * 
          * @type {number}
@@ -65,12 +66,12 @@ class Source {
      * @returns {string}
      */
     toString() {
-        return "Emission rate of " + this.emissionRate + " g/s";
+        return "${this.} Emission rate of ${this.emissionRate} g/s";
     }
 
     /**
      * 
-     * @returns {number|*}
+     * @returns {number}
      */
     getEmissionRate() {
         return this.emissionRate;
@@ -78,7 +79,7 @@ class Source {
 
     /**
      * 
-     * @returns {number|*}
+     * @returns {number}
      */
     getHeight() {
         return this.height;
@@ -86,7 +87,7 @@ class Source {
 
     /**
      * 
-     * @returns {number|*}
+     * @returns {number}
      */
     getRadius() {
         return this.radius;
@@ -94,15 +95,15 @@ class Source {
 
     /**
      * 
-     * @returns {SourceType|*}
+     * @returns {SourceType}
      */
     getType() {
-        return this.type;
+        return this._type;
     }
 
     /**
      * 
-     * @returns {number|*}
+     * @returns {number}
      */
     getTemperature() {
         return this.temp;
@@ -110,7 +111,7 @@ class Source {
 
     /**
      * 
-     * @returns {number|*}
+     * @returns {number}
      */
     getExitVelocity() {
         return this.exitVel;

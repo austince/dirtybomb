@@ -5,28 +5,22 @@
  */
 
 import Dispersion from './Dispersion/Dispersion';
-import ExplosiveMaterial from './ExplosiveMaterial';
-import NuclearMaterial from './NuclearMaterial';
+import Bomb from './Bomb';
 
 /**
- * A simple dirtybomb
+ * A simple dirtybomb. Assumes all nuclear material is released into the atmosphere
  */
-class Dirtybomb {
-    
-    /**
-     * 
-     * @param {ExplosiveMaterial} expMat
-     * @param {NuclearMaterial} nuclearMat
-     * @param {Atmosphere} atmosphere
-     */
-    constructor(expMat, nuclearMat, atmosphere) {
-        this._expMat = expMat;
+class Dirtybomb extends Bomb {
+    constructor(nuclearMat, tntEqvMass, atmosphere = Bomb.STANDARD_ATM) {
+        super(tntEqvMass, atmosphere);
         this._nucMat = nuclearMat;
-        this._atmosphere = atmosphere;
-    }
-
-    set atmosphere(atmosphere) {
-        this._atmosphere = atmosphere;
+        
+        this._puff = new Dispersion.GaussianDecayPuff(
+            atmosphere,
+            this.source,
+            this.mass,
+            nuclearMat.halfLife
+        );
     }
 }
 

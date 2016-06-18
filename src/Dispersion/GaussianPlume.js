@@ -93,7 +93,7 @@ class GaussianPlume {
      * @returns {string}
      */
     toString() {
-        return '${this._source.toString()} in ${this._atmosphere.toString()}';
+        return '${this._source.toString()} in ${this._atm.toString()}';
     }
 
     /**
@@ -120,7 +120,7 @@ class GaussianPlume {
      * @returns {GaussianPlume} For chaining purposes
      */
     setAtmosphere(atmosphere) {
-        this._atmosphere = atmosphere;
+        this._atm = atmosphere;
         return this;
     }
 
@@ -129,7 +129,7 @@ class GaussianPlume {
      * @returns {Atmosphere|*}
      */
     getAtmosphere() {
-        return this._atmosphere;
+        return this._atm;
     }
 
     /**
@@ -140,7 +140,7 @@ class GaussianPlume {
      */
     _getStdYCoeffs(x) {
         let index;
-        let coeffs = STD_Y_COEFFS[this._atmosphere.getGrade()];
+        let coeffs = STD_Y_COEFFS[this._atm.getGrade()];
         if (x < 10000) {
             index = 0;
         } else {
@@ -169,7 +169,7 @@ class GaussianPlume {
      */
     _getStdZCoeffs(x) {
         let index;
-        let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
+        let coeffs = STD_Z_COEFFS[this._atm.getGrade()];
         if (x < 500) {
             index = 0;
         } else if (x < 5000) {
@@ -198,7 +198,7 @@ class GaussianPlume {
      * @returns {number} m/s
      */
     getWindSpeedAtSourceHeight() {
-        return this._atmosphere.getWindSpeedAt(this.getEffectiveSourceHeight());
+        return this._atm.getWindSpeedAt(this.getEffectiveSourceHeight());
     }
 
     /**
@@ -250,11 +250,11 @@ class GaussianPlume {
         const srcTemp = this._source.getTemperature();
         const srcHeight = this._source.getHeight();
         const srcExitVel = this._source.getExitVelocity();
-        const ambTemp = this._atmosphere.getTemperature();
-        const F = g * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
-        const U = this._atmosphere.getWindSpeedAt(srcHeight); // wind speed at stack height
+        const ambTemp = this._atm.getTemperature();
+        const F = G * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
+        const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack height
 
-        if (this._atmosphere.getGrade() <= 5) {
+        if (this._atm.getGrade() <= 5) {
             // unstable/neutral
             // Gets super funky, ugh science
 
@@ -268,7 +268,7 @@ class GaussianPlume {
             mDeltaH = (3 * srcExitVel * (2 * srcRad)) / U;
         } else {
             // stable
-            const s = this._atmosphere.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
+            const s = this._atm.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
             bDeltaH = 2.6 * Math.pow(F / (U * s), .333);
             mDeltaH = 1.5 * Math.pow(srcExitVel * srcRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
         }

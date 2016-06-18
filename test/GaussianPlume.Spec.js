@@ -14,9 +14,20 @@ import GaussianPlume from '../src/Dispersion/GaussianPlume';
 chai.should();
 
 describe('Simple Gaussian Plume', function() {
+    let plume;
+    
     it('should import correctly', () => {
         let atm = new Atmosphere(10, 1, 65, 300);
         let source = new Source(SourceType.POINT, 2, 150, 5, 400, 4);
-        let plume = new GaussianPlume(atm, source); 
+        plume = new GaussianPlume(atm, source); 
+    });
+    
+    it('should have 0 stdY and stdZ at source', () => {
+        plume.getStdY(0).should.be.closeTo(0, 0.1);
+        plume.getStdZ(0).should.be.closeTo(0, 0.1);
+    });
+
+    it('should calculate proper effective heights', () => {
+
     });
 });

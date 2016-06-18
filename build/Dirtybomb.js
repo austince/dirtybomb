@@ -11,12 +11,12 @@
 
     /**
      * Currently only supporting Point sources
-     * @type {{POINT: number, VOLUME: number, AREA: number}}
+     * @type {{POINT: string, VOLUME: string, AREA: string}}
      */
     const SourceType = {
-        POINT: 0,
-        VOLUME: 1,
-        AREA: 2
+        POINT: 'point',
+        VOLUME: 'volume',
+        AREA: 'area'
     };
 
     /**
@@ -52,8 +52,9 @@
             /**
              * 
              * @type {SourceType}
+             * @private
              */
-            this.type = type;
+            this._type = type;
             /**
              * 
              * @type {number}
@@ -71,12 +72,12 @@
          * @returns {string}
          */
         toString() {
-            return "Emission rate of " + this.emissionRate + " g/s";
+            return "${this.} Emission rate of ${this.emissionRate} g/s";
         }
 
         /**
          * 
-         * @returns {number|*}
+         * @returns {number}
          */
         getEmissionRate() {
             return this.emissionRate;
@@ -84,7 +85,7 @@
 
         /**
          * 
-         * @returns {number|*}
+         * @returns {number}
          */
         getHeight() {
             return this.height;
@@ -92,7 +93,7 @@
 
         /**
          * 
-         * @returns {number|*}
+         * @returns {number}
          */
         getRadius() {
             return this.radius;
@@ -100,15 +101,15 @@
 
         /**
          * 
-         * @returns {SourceType|*}
+         * @returns {SourceType}
          */
         getType() {
-            return this.type;
+            return this._type;
         }
 
         /**
          * 
-         * @returns {number|*}
+         * @returns {number}
          */
         getTemperature() {
             return this.temp;
@@ -116,12 +117,14 @@
 
         /**
          * 
-         * @returns {number|*}
+         * @returns {number}
          */
         getExitVelocity() {
             return this.exitVel;
         }
     }
+
+    Source.SourceType = SourceType;
 
     /**
      * ES5
@@ -685,7 +688,7 @@
         [{a: .05645, b: .8050}, {a: .1930, b: .6072}, {a: 1.505, b: .3662}]
     ];
 
-    // gravity (m/s^2)
+    const G = 9.8; // gravity (m/s^2)
 
     /**
      * A Simple Gaussian Plume. For resources, please see the github repo.
@@ -710,7 +713,7 @@
          * @returns {string}
          */
         toString() {
-            return '${this._source.toString()} in ${this._atmosphere.toString()}';
+            return '${this._source.toString()} in ${this._atm.toString()}';
         }
 
         /**
@@ -737,7 +740,7 @@
          * @returns {GaussianPlume} For chaining purposes
          */
         setAtmosphere(atmosphere) {
-            this._atmosphere = atmosphere;
+            this._atm = atmosphere;
             return this;
         }
 
@@ -746,7 +749,7 @@
          * @returns {Atmosphere|*}
          */
         getAtmosphere() {
-            return this._atmosphere;
+            return this._atm;
         }
 
         /**
@@ -757,7 +760,7 @@
          */
         _getStdYCoeffs(x) {
             let index;
-            let coeffs = STD_Y_COEFFS[this._atmosphere.getGrade()];
+            let coeffs = STD_Y_COEFFS[this._atm.getGrade()];
             if (x < 10000) {
                 index = 0;
             } else {
@@ -786,7 +789,7 @@
          */
         _getStdZCoeffs(x) {
             let index;
-            let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
+            let coeffs = STD_Z_COEFFS[this._atm.getGrade()];
             if (x < 500) {
                 index = 0;
             } else if (x < 5000) {
@@ -815,7 +818,7 @@
          * @returns {number} m/s
          */
         getWindSpeedAtSourceHeight() {
-            return this._atmosphere.getWindSpeedAt(this.getEffectiveSourceHeight());
+            return this._atm.getWindSpeedAt(this.getEffectiveSourceHeight());
         }
 
         /**
@@ -867,11 +870,11 @@
             const srcTemp = this._source.getTemperature();
             const srcHeight = this._source.getHeight();
             const srcExitVel = this._source.getExitVelocity();
-            const ambTemp = this._atmosphere.getTemperature();
-            const F = g * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
-            const U = this._atmosphere.getWindSpeedAt(srcHeight); // wind speed at stack height
+            const ambTemp = this._atm.getTemperature();
+            const F = G * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
+            const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack height
 
-            if (this._atmosphere.getGrade() <= 5) {
+            if (this._atm.getGrade() <= 5) {
                 // unstable/neutral
                 // Gets super funky, ugh science
 
@@ -885,7 +888,7 @@
                 mDeltaH = (3 * srcExitVel * (2 * srcRad)) / U;
             } else {
                 // stable
-                const s = this._atmosphere.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
+                const s = this._atm.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
                 bDeltaH = 2.6 * Math.pow(F / (U * s), .333);
                 mDeltaH = 1.5 * Math.pow(srcExitVel * srcRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
             }
@@ -1174,6 +1177,74 @@
     }
 
     /**
+     * Adds decay to the Simple Gaussian Puff
+     */
+    class GaussianDecayPuff extends GaussianPuff {
+        /**
+         *
+         * @param {Atmosphere} atmosphere
+         * @param {Source} source
+         * @param {number} massReleased
+         * @param {number} halfLife - seconds
+         */
+        constructor(atmosphere, source, massReleased, halfLife) {
+            super(atmosphere, source, massReleased);
+
+            /**
+             *
+             * @type {number}
+             * @private
+             */
+            this._halfLife = halfLife; // Usually the half-life of the pollutant
+
+            /**
+             * 
+             * @type {number}
+             * @private
+             */
+            this._decayCoeff = 0.693 / halfLife;
+        }
+
+        /**
+         *
+         * @returns {number}
+         */
+        getHalfLife() {
+            return this._halfLife;
+        }
+
+        /**
+         * Read URAaTM pg 281 - 285
+         * @see https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
+         * @param {number} x - downwind distance (m)
+         * @param {number} windSpeed - at source height (m/s)
+         * @returns {number} Decay term
+         */
+        getDecayTerm(x, windSpeed) {
+            if (this._decayCoeff == 0) {
+                return 1;
+            } else {
+                return Math.exp(- this._decayCoeff * (x / windSpeed));
+            }
+        }
+
+        /**
+         * Takes into account the decay term, as seen in URAaTM pg 281
+         * @see https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
+         * @override
+         * @param {number} x - downwind (m)
+         * @param {number} y - crosswind (m)
+         * @param {number} z - height (m)
+         * @param {number} t - seconds from start
+         */
+        getConcentration(x, y, z, t) {
+            let unDecayed = super.getConcentration(x, y, z, t);
+            let decayTerm = this.getDecayTerm(x, this.getAtmosphere().getWindSpeed());
+            return unDecayed * decayTerm;
+        }
+    }
+
+    /**
      * Allows for atmospheric changes between puff movements
      */
     class DynamicGaussianPuff extends GaussianPuff {
@@ -1247,7 +1318,7 @@
          * 
          * @returns {number}
          */
-        getTime() {
+        get time() {
             return this._currentTime;
         }
 
@@ -1474,24 +1545,74 @@
         }
     }
 
-    const Dispersion = {};
-    Dispersion.Source = Source;
-    Dispersion.SourceType = SourceType;
-    Dispersion.Atmosphere = Atmosphere;
-    Dispersion.GaussianPlume = GaussianPlume;
-    Dispersion.GaussianDecayPlume = GaussianDecayPlume;
-    Dispersion.GasussianPuff = GaussianPuff;
-    Dispersion.DynamicGaussianPuff = DynamicGaussianPuff;
-    Dispersion.DynamicGaussianDecayPuff = DynamicGaussianDecayPuff;
+    /**
+     * Wrapper for the Dispersion Library
+     */
+    class Dispersion {}
 
     /**
-     * Everything is exported through the Dirtybomb object
-     * Potentially going to export Gaussian Plumes as their own modules
-     * @type {Object}
+     * 
+     * @type {Source}
      */
+    Dispersion.Source = Source;
+    /**
+     * 
+     * @type {{POINT: number, VOLUME: number, AREA: number}}
+     */
+    Dispersion.SourceType = SourceType;
+    /**
+     * 
+     * @type {Atmosphere}
+     */
+    Dispersion.Atmosphere = Atmosphere;
+    /**
+     * 
+     * @type {GaussianPlume}
+     */
+    Dispersion.GaussianPlume = GaussianPlume;
+    /**
+     * 
+     * @type {GaussianDecayPlume}
+     */
+    Dispersion.GaussianDecayPlume = GaussianDecayPlume;
+    Dispersion.GasussianPuff = GaussianPuff;
+    Dispersion.GaussianDecayPuff = GaussianDecayPuff;
+    Dispersion.DynamicGaussianPuff = DynamicGaussianPuff;
+    Dispersion.DynamicGaussianDecayPuff = DynamicGaussianDecayPuff;
+    Dispersion.Vector = Vector;
 
+    /**
+     * A simple dirtybomb
+     */
     class Dirtybomb {
         
+        constructor(expMat, nuclearMat, atmosphere) {
+            this._expMat = expMat;
+            this._nucMat = nuclearMat;
+            this._atm = atmosphere;
+            
+            /*this._source = new Dispersion.Source(
+                Dispersion.SourceType.POINT,
+                4, // Emission rate, arb for puffs. TODO!
+                this.getBlastHeight(),
+                this.getBlastRadius(),
+            );
+            this._cloud = new Dispersion.GaussianDecayPuff(
+                atmosphere, 
+            );*/
+        }
+
+        set atmosphere(atmosphere) {
+            this._atm = atmosphere;
+        }
+        
+        getBlastHeight() {
+            return 10;
+        }
+        
+        getBlastRadius() {
+            return 10;
+        }
     }
 
 
