@@ -3,24 +3,28 @@
  * file: Dirtybomb.js
  * 
  */
-import GaussianPlume, {
-    Atmosphere,
-    Source,
-    SourceType
-} from './Dispersion/GaussianPlume';
-import GaussianDecayPlume from './Dispersion/GaussianDecayPlume';
+
+import Dispersion from './Dispersion/Dispersion';
+import Bomb from './Bomb';
 
 /**
- * Everything is exported through the Dirtybomb object
- * Potentially going to export Gaussian Plumes as their own modules
- * @type {Object}
+ * A simple dirtybomb. Assumes all nuclear material is released into the atmosphere
  */
-const Dirtybomb = {};
+class Dirtybomb extends Bomb {
+    constructor(nuclearMat, tntEqvMass, atmosphere = Bomb.STANDARD_ATM) {
+        super(tntEqvMass, atmosphere);
+        this._nucMat = nuclearMat;
+        
+        this._puff = new Dispersion.GaussianDecayPuff(
+            atmosphere,
+            this.source,
+            this.mass,
+            nuclearMat.halfLife
+        );
+    }
+}
 
-Dirtybomb.GaussianPlume = GaussianPlume;
-Dirtybomb.GaussianDecayPlume = GaussianDecayPlume;
-Dirtybomb.Atmosphere = Atmosphere;
-Dirtybomb.Source = Source;
-Dirtybomb.SourceType = SourceType;
+
+Dirtybomb.Atmosphere = Dispersion.Atmosphere;
 
 export default Dirtybomb;

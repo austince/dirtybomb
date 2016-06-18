@@ -1,4 +1,5 @@
 /**
+ * ES5
  * https://evanw.github.io/lightgl.js/docs/vector.html
  */
 
