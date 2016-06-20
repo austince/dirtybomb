@@ -14,7 +14,7 @@ import GaussianPuff from '../src/Dispersion/GaussianPuff';
 
 chai.should();
 
-describe('Simple Gaussian Plume', function() {
+describe('GaussianPuff', function() {
     let puff;
 
     it('should import correctly', () => {
@@ -26,8 +26,9 @@ describe('Simple Gaussian Plume', function() {
     it('should have a center at 0,0,0 before release', () => {
        puff.getCenterX(0).should.be.equal(0); 
     });
-   /*
+
     it('should have 0 concentration before release', () => {
-       puff.getConcentration(0, 0, 0, 0).should.be.equal(0);
-    });*/
+       isNaN(puff.getConcentration(0, 0, 0, 0)).should.be.true;
+        puff.getConcentration(0, 0, 0, 10).should.be.above(0);
+    });
 });

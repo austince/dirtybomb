@@ -18,7 +18,7 @@ import Vector from './Vector';
 /**
  * Wrapper for the Dispersion Library
  */
-class Dispersion {}
+const Dispersion = {};
 
 /**
  * 

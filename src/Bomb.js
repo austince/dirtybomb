@@ -2,11 +2,7 @@
  * Created by austin on 6/17/16.
  */
 
-import Atmosphere from './Dispersion/Atmosphere';
-import Source, {
-    SourceType
-} from './Dispersion/Source';
-import GaussianPuff from './Dispersion/GaussianPuff';
+import Dispersion from './Dispersion/Dispersion';
 
 /**
  * Explosive energy of tnt
@@ -20,8 +16,9 @@ class Bomb {
      *
      * @param {number} tntEqvMass
      * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
+     * @param {boolean} [isStatic=true] - Determines the type of puff that is used
      */
-    constructor(tntEqvMass, atmosphere = Bomb.STANDARD_ATM) {
+    constructor(tntEqvMass, atmosphere = Bomb.STANDARD_ATM, isStatic = true) {
         /**
          *
          * @type {number}
@@ -46,8 +43,8 @@ class Bomb {
          * @type {Source}
          * @private
          */
-        this._source = new Source(
-            SourceType.POINT,
+        this._source = new Dispersion.Source(
+            Dispersion.SourceType.POINT,
             Math.POSITIVE_INFINITY, // Emission rate, arb for puffs. TODO!
             this.cloudHeight,
             this.cloudRadius,
@@ -55,11 +52,20 @@ class Bomb {
             this.getGasVelocity(this.cloudHeight)
         );
         
-        this._puff = new GaussianPuff(
-            atmosphere,
-            this._source,
-            this.mass // Todo: how to calculate how much mass goes into the air?
-        );
+        if (isStatic) {
+            this._puff = new Dispersion.GaussianPuff(
+                atmosphere,
+                this._source,
+                this.mass // Todo: how to calculate how much mass goes into the air?
+            );
+        } else {
+            this._puff = new Dispersion.GaussianPuff(
+                atmosphere,
+                this._source,
+                this.mass // Todo: how to calculate how much mass goes into the air?
+            );
+        }
+        
         
         if (this.weaponYield > 1000) {
             console.warn("WARNING: this bomb library is mean for bombs weaponYields under 1000.");
@@ -233,6 +239,6 @@ class Bomb {
  * 59 degrees F / 15 degrees C
  * @type {Atmosphere}
  */
-Bomb.STANDARD_ATM = new Atmosphere(0, 0, 65, 288.2);
+Bomb.STANDARD_ATM = new Dispersion.Atmosphere(0, 0, 65, 288.2);
 
 export default Bomb;

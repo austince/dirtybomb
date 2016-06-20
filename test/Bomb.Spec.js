@@ -4,16 +4,15 @@
 import chai from 'chai';
 
 import Bomb from '../src/Bomb';
-const dirtybomb = require('../dist/Dirtybomb');
 
 "use strict";
 
 chai.should();
 
-describe('Simple Dirty bomb', function() {
+describe('Bomb', function() {
     let bomb;
 
-    it('should import correctly', () => {
+  /*  it('should import correctly', () => {
         bomb = new Bomb(50);
     });
 
@@ -27,5 +26,5 @@ describe('Simple Dirty bomb', function() {
         bomb.cloudRadius.should.be.above(0);
         console.log(bomb.cloudHeight);
         console.log(bomb.cloudRadius);
-    });
+    });*/
 });

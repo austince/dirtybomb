@@ -6,25 +6,55 @@
 
 import Dispersion from './Dispersion/Dispersion';
 import Bomb from './Bomb';
+import NuclearMaterial from './NuclearMaterial';
 
 /**
  * A simple dirtybomb. Assumes all nuclear material is released into the atmosphere
  */
 class Dirtybomb extends Bomb {
-    constructor(nuclearMat, tntEqvMass, atmosphere = Bomb.STANDARD_ATM) {
-        super(tntEqvMass, atmosphere);
-        this._nucMat = nuclearMat;
+
+    /**
+     * @param {NuclearMaterial} nuclearMat
+     * @param {number} tntEqvMass
+     * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
+     * @param {boolean} [isStatic=true] - Determines the type of puff that is used
+     */
+    constructor(nuclearMat, tntEqvMass, atmosphere = Bomb.STANDARD_ATM, isStatic = true) {
+        super(tntEqvMass, atmosphere, isStatic);
         
-        this._puff = new Dispersion.GaussianDecayPuff(
-            atmosphere,
-            this.source,
-            this.mass,
-            nuclearMat.halfLife
-        );
+        /**
+         * @type {NuclearMaterial}
+         * @private
+         */
+        this._nucMat = nuclearMat;
+
+        /**
+         * Either
+         * @type {GaussianPuff}
+         * @private
+         */
+        this._puff;
+        
+        if (isStatic) {
+            this._puff = new Dispersion.GaussianDecayPuff(
+                atmosphere,
+                this.source,
+                nuclearMat.mass,
+                nuclearMat.halfLife
+            );
+        } else {
+            this._puff = new Dispersion.DynamicGaussianDecayPuff(
+                atmosphere,
+                this.source,
+                nuclearMat.mass,
+                nuclearMat.halfLife
+            )
+        }
     }
 }
 
 
 Dirtybomb.Atmosphere = Dispersion.Atmosphere;
+Dirtybomb.NuclearMaterial = NuclearMaterial;
 
 export default Dirtybomb;

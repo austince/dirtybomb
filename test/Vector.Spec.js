@@ -11,7 +11,7 @@ import Vector from '../src/Dispersion/Vector';
 
 chai.should();
 
-describe('Basic Vector Tests', function() {
+describe('Vector', function() {
 
     it('should do basic calculations', () => {
         let x1 = new Vector(1, 0, 0);

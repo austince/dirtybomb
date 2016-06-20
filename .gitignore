@@ -19,4 +19,6 @@ dist/
 ## Library roots
 node_modules/
 bower_components/
+
+## Logs
 *.log

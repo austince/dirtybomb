@@ -13,7 +13,7 @@ import GaussianPlume from '../src/Dispersion/GaussianPlume';
 
 chai.should();
 
-describe('Simple Gaussian Plume', function() {
+describe('GaussianPlume', function() {
     let plume;
     
     it('should import correctly', () => {

@@ -8,11 +8,16 @@ const dirtybomb = require('../dist/Dirtybomb');
 
 chai.should();
 
-describe('Simple Dirty bomb', function() {
+describe('DirtyBomb', function() {
     let bomb;
-    
-    it('should import correctly', () => {
-        let atm = new dirtybomb.Atmosphere(10, 1, 65, 300);
+    describe('imports', () => {
+        it('should import Atmosphere', () => {
+            let atm = new dirtybomb.Atmosphere(10, 1, 65, 300);
+        });
+        
+        it('should import NuclearMaterial', () => {
+            let nucMat = new dirtybomb.NuclearMaterial(2767540000, 238, 100);
+        })
     });
-   
+    
 });
