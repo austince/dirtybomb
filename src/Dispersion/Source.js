@@ -53,7 +53,7 @@ class Source {
          * 
          * @type {number}
          */
-        this.temp = temperature;
+        this._temp = temperature;
         /**
          * 
          * @type {number}
@@ -106,7 +106,7 @@ class Source {
      * @returns {number}
      */
     getTemperature() {
-        return this.temp;
+        return this._temp;
     }
 
     /**

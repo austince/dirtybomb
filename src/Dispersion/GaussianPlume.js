@@ -93,7 +93,7 @@ class GaussianPlume {
      * @returns {string}
      */
     toString() {
-        return '${this._source.toString()} in ${this._atm.toString()}';
+        return '${this.source.toString()} in ${this._atm.toString()}';
     }
 
     /**
@@ -110,7 +110,7 @@ class GaussianPlume {
      * 
      * @returns {Source|*}
      */
-    getSource() {
+    get source() {
         return this._source;
     }
 
@@ -197,7 +197,7 @@ class GaussianPlume {
      * 
      * @returns {number} m/s
      */
-    getWindSpeedAtSourceHeight() {
+    get windSpeedAtSourceHeight() {
         return this._atm.getWindSpeedAt(this.getEffectiveSourceHeight());
     }
 
@@ -220,7 +220,7 @@ class GaussianPlume {
             return this._effSrcHeight;
         }
         let deltaH = this.getMaxRise(0);
-        this._effSrcHeight = this._source.getHeight() + deltaH;
+        this._effSrcHeight = this.source.getHeight() + deltaH;
         return this._effSrcHeight;
     }
 
@@ -246,11 +246,11 @@ class GaussianPlume {
         // Grades 1 - 5 are assumed unstable/neutral, 6 - 7 are assumed stable
         // Both the momentum dominated and buoyancy dominated methods should be calculated, then use the max
         let bDeltaH, mDeltaH; // Max plume rise buoyancy, momentum dominated resp.
-        const srcRad = this._source.getRadius();
-        const srcTemp = this._source.getTemperature();
-        const srcHeight = this._source.getHeight();
-        const srcExitVel = this._source.getExitVelocity();
-        const ambTemp = this._atm.getTemperature();
+        const srcRad = this.source.getRadius();
+        const srcTemp = this.source.getTemperature();
+        const srcHeight = this.source.getHeight();
+        const srcExitVel = this.source.getExitVelocity();
+        const ambTemp = this._atm.temperature;
         const F = G * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
         const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack height
 
@@ -260,7 +260,7 @@ class GaussianPlume {
 
             // Distance to Maximum Plume Rise
             let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
-            // Will use 0 if calculating from the _source. Need to read more about this.
+            // Will use 0 if calculating from the source. Need to read more about this.
             if (x == 0 || x > 3.5 * xStar) {
                 x = xStar;
             }
@@ -268,7 +268,7 @@ class GaussianPlume {
             mDeltaH = (3 * srcExitVel * (2 * srcRad)) / U;
         } else {
             // stable
-            const s = this._atm.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
+            const s = this._atm.letterGrade === 'E' ? 0.018: 0.025; //  g/ambientTemp
             bDeltaH = 2.6 * Math.pow(F / (U * s), .333);
             mDeltaH = 1.5 * Math.pow(srcExitVel * srcRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
         }
@@ -294,7 +294,7 @@ class GaussianPlume {
         let stdZ = this.getStdZ(x);
         let H = this.getEffectiveSourceHeight();
 
-        let a = (this._source.getEmissionRate() * 1000000) / (Math.PI * stdY * stdZ * this.getWindSpeedAtSourceHeight());
+        let a = (this.source.getEmissionRate() * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
         let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
 
         return a * b;
@@ -317,8 +317,8 @@ class GaussianPlume {
     /**
      * Calculates the concentration at a given x,y,z coordinate.
      * Must be downwind
-     * @param {number} x - Meters downwind of _source, greater than 0
-     * @param {number} y - Meters crosswind of _source
+     * @param {number} x - Meters downwind of source, greater than 0
+     * @param {number} y - Meters crosswind of source
      * @param {number} z - Meters vertical of ground
      * @returns {number} micrograms / cubic meter
      *
@@ -332,9 +332,9 @@ class GaussianPlume {
         let stdZ = this.getStdZ(x);
         // Effective stack height
         let H = this.getEffectiveSourceHeight();
-        let U = this.getWindSpeedAtSourceHeight();
+        let U = this.windSpeedAtSourceHeight;
 
-        let a = this._source.getEmissionRate() / (2 * Math.PI * stdY * stdZ * U);
+        let a = this.source.getEmissionRate() / (2 * Math.PI * stdY * stdZ * U);
         let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
         let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
         let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
@@ -345,7 +345,7 @@ class GaussianPlume {
 
     /**
      * Calculates the stdY, stdZ, and concentrations for a list of x coordinates
-     *  directly downwind of the _source
+     *  directly downwind of the source
      * Useful in creating graphs / processing large amounts of data at once
      * @param {number[]} xs - a list of x's
      * @returns {Stat[]} a list of stats

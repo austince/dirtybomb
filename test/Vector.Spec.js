@@ -22,5 +22,6 @@ describe('Vector', function() {
     it('should do 2d calculations', () => {
         let x1 = new Vector(1, 1);
         x1.abs().should.be.closeTo(1.414, 0.01);
-    })
+    });
+    
 });

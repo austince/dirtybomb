@@ -100,15 +100,19 @@ class DynamicGaussianPuff extends GaussianPuff {
      *
      * @returns {Vector}
      */
-    getCenter() {
+    get center() {
        return this._currentCenter;
+    }
+    
+    get path() {
+        return this._path;
     }
 
     /**
      *
      * @returns {Vector}
      */
-    getStart() {
+    get start() {
         return this._startCenter;
     }
 
@@ -116,17 +120,17 @@ class DynamicGaussianPuff extends GaussianPuff {
      * 
      * @returns {number}
      */
-    getDistanceFromStart() {
-        return this.getCenter().subtract(this.getStart()).abs();
+    get distanceFromStart() {
+        return this.getCenter().subtract(this.start).abs();
     }
 
     /**
      * 
      * @returns {number}
      */
-    getDistanceTraveled() {
+    get distanceTraveled() {
         let dist = 0;
-        let start = this.getStart();
+        let start = this.start;
         for (var point of this._path) {
             dist += point.subtract(start).abs();
             start = point;
@@ -141,7 +145,7 @@ class DynamicGaussianPuff extends GaussianPuff {
      * @returns {STD_Y_COEFF}
      */
     _getStdYCoeffs() {
-        let x = this.getDistanceTraveled();
+        let x = this.distanceTraveled;
         return super._getStdYCoeffs(x);
     }
     
@@ -152,7 +156,7 @@ class DynamicGaussianPuff extends GaussianPuff {
      * @override
      * @returns {number} crosswind standard deviation at x meters downwind (m)
      */
-    getStdY() {
+    get stdY() {
         return this._stdY;
     }
 
@@ -163,7 +167,7 @@ class DynamicGaussianPuff extends GaussianPuff {
      * @override
      * @returns {number}
      */
-    getStdZ() {
+    get stdZ() {
         return this._stdZ;
     }
 
@@ -171,7 +175,7 @@ class DynamicGaussianPuff extends GaussianPuff {
      * 
      * @returns {number|*}
      */
-    getVirtHoriz() {
+    get virtHoriz() {
         return this._virtHoriz;
     }
 
@@ -179,7 +183,7 @@ class DynamicGaussianPuff extends GaussianPuff {
      * 
      * @returns {number|*}
      */
-    getVertDist() {
+    get vertDist() {
         return this._vertDist;
     }
     
@@ -191,27 +195,27 @@ class DynamicGaussianPuff extends GaussianPuff {
      */
     step(deltaT) {
         // update vertHoriz and vertDist
-        let x = this.getDistanceTraveled();
+        let x = this.distanceTraveled;
         let stdYCoeffs = super._getStdYCoeffs(x);
         let stdZCoeffs = super._getStdZCoeffs(x);
 
         // Update the Virtual horizontal and the vertical distance @see equation 15
-        this._virtHoriz = Math.pow((this.getStdY() / stdYCoeffs.c), (1 / stdYCoeffs.d));
-        this._vertDist = Math.pow((this.getStdZ() / stdZCoeffs.a), (1 / stdZCoeffs.b));
+        this._virtHoriz = Math.pow((this.stdY / stdYCoeffs.c), (1 / stdYCoeffs.d));
+        this._vertDist = Math.pow((this.stdZ / stdZCoeffs.a), (1 / stdZCoeffs.b));
 
         // Find the change in x and y directions
         // Todo: use Navier-Stokes equation solver to account for momentum @see equation 16
-        let deltaDVec = this.getAtmosphere().getWindSpeedVec().multiply(deltaT);    // The change in distance from wind
+        let deltaDVec = this.getAtmosphere().windSpeedVec.multiply(deltaT);    // The change in distance from wind
         let deltaD = deltaDVec.abs();
 
         // Update the standard deviations @see equation 17
-        this._stdY = stdYCoeffs.c * Math.pow(this.getVirtHoriz() + deltaD, stdYCoeffs.d);
-        this._stdZ = stdZCoeffs.a * Math.pow(this.getVertDist() + deltaD, stdZCoeffs.b);
+        this._stdY = stdYCoeffs.c * Math.pow(this.virtHoriz + deltaD, stdYCoeffs.d);
+        this._stdZ = stdZCoeffs.a * Math.pow(this.vertDist + deltaD, stdZCoeffs.b);
 
         // Update position/time/path
         this._currentTime += deltaT;
-        this._setCenter(this.getCenter().add(deltaDVec));
-        this._path.push(this.getCenter().clone());
+        this._setCenter(this.center.add(deltaDVec));
+        this._path.push(this.center.clone());
         
         return this;
     }
@@ -225,11 +229,11 @@ class DynamicGaussianPuff extends GaussianPuff {
      * @returns {number}
      */
     getConcentration(x, y, z) {
-        let stdY = this.getStdY();
-        let stdZ = this.getStdZ();
+        let stdY = this.stdY;
+        let stdZ = this.stdZ;
         let H = this.getEffectiveSourceHeight();
 
-        let a = this.getMassReleased() / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
+        let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
         let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
         let c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
         let d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));

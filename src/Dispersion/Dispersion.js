@@ -19,7 +19,6 @@ import Vector from './Vector';
  * Wrapper for the Dispersion Library
  */
 const Dispersion = {};
-
 /**
  * 
  * @type {Source}
@@ -45,10 +44,41 @@ Dispersion.GaussianPlume = GaussianPlume;
  * @type {GaussianDecayPlume}
  */
 Dispersion.GaussianDecayPlume = GaussianDecayPlume;
-Dispersion.GasussianPuff = GaussianPuff;
+/**
+ * 
+ * @type {GaussianPuff}
+ */
+Dispersion.GaussianPuff = GaussianPuff;
+/**
+ * 
+ * @type {GaussianDecayPuff}
+ */
 Dispersion.GaussianDecayPuff = GaussianDecayPuff;
+/**
+ * 
+ * @type {DynamicGaussianPuff}
+ */
 Dispersion.DynamicGaussianPuff = DynamicGaussianPuff;
+/**
+ * 
+ * @type {DynamicGaussianDecayPuff}
+ */
 Dispersion.DynamicGaussianDecayPuff = DynamicGaussianDecayPuff;
+/**
+ * 
+ * @type {Vector}
+ */
 Dispersion.Vector = Vector;
+
+export {Source};
+export {SourceType};
+export {Atmosphere};
+export {GaussianPlume};
+export {GaussianDecayPlume};
+export {GaussianPuff};
+export {GaussianDecayPuff};
+export {DynamicGaussianPuff};
+export {DynamicGaussianDecayPuff};
+export {Vector};
 
 export default Dispersion;

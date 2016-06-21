@@ -2,19 +2,29 @@
  * Created by austin on 6/17/16.
  */
 
-import Dispersion from './Dispersion/Dispersion';
+import Source from './Dispersion/Source';
+import Atmosphere from './Dispersion/Atmosphere';
+import GaussianPuff from './Dispersion/GaussianPuff';
+import DynamicGaussianPuff from './Dispersion/DynamicGaussianDecayPuff';
+import {SourceType} from './Dispersion/Source';
+
+// For some reason importing Atmosphere makes Rollup unhappy
 
 /**
  * Explosive energy of tnt
  * MJ/kg
  * @type {number}
+ * @see https://en.wikipedia.org/wiki/TNT_equivalent
  */
-const Q_TNT = 4.19;
+const Q_TNT = 4.184;    // One Megaton of TNT == 4.184 Petajoules
 
+/**
+ * A simple bomb 
+ */
 class Bomb {
     /**
      *
-     * @param {number} tntEqvMass
+     * @param {number} tntEqvMass - Standardized TNT equivalent kilotons (kt)
      * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
      * @param {boolean} [isStatic=true] - Determines the type of puff that is used
      */
@@ -43,8 +53,8 @@ class Bomb {
          * @type {Source}
          * @private
          */
-        this._source = new Dispersion.Source(
-            Dispersion.SourceType.POINT,
+        this._source = new Source(
+            SourceType.POINT,
             Math.POSITIVE_INFINITY, // Emission rate, arb for puffs. TODO!
             this.cloudHeight,
             this.cloudRadius,
@@ -53,13 +63,13 @@ class Bomb {
         );
         
         if (isStatic) {
-            this._puff = new Dispersion.GaussianPuff(
+            this._puff = new GaussianPuff(
                 atmosphere,
                 this._source,
                 this.mass // Todo: how to calculate how much mass goes into the air?
             );
         } else {
-            this._puff = new Dispersion.GaussianPuff(
+            this._puff = new DynamicGaussianPuff(
                 atmosphere,
                 this._source,
                 this.mass // Todo: how to calculate how much mass goes into the air?
@@ -90,10 +100,18 @@ class Bomb {
         return this._atm;
     }
 
+    /**
+     *
+     * @returns {number}
+     */
     get weaponYield() {
         return this._weaponYield;
     }
-    
+
+    /**
+     *
+     * @returns {Source}
+     */
     get source() {
         return this._source;
     }
@@ -118,7 +136,7 @@ class Bomb {
 
     /**
      * Based on kilotons of tnt nuclear explosions
-     * @returns {number}
+     * @returns {number} - (m)
      */
     get blastRadius() {
         return 30 * Math.pow(this.weaponYield, 1/3);
@@ -150,6 +168,10 @@ class Bomb {
         return 872 * Math.pow(this.weaponYield, 0.427);
     }
 
+    /**
+     *
+     * @returns {number} - (m)
+     */
     get cloudRadius() {
         let mainRad = this._getMainCloudRadius();
         if (this.weaponYield < 20) {
@@ -161,7 +183,10 @@ class Bomb {
         return 0.2 * mainRad - 0.1 * mainRad * ((this.weaponYield - 1000) / 9000);
     }
 
-
+    /**
+     *
+     * @returns {DynamicGaussianPuff|GaussianPuff} - Depending on if the dispersion is static
+     */
     get dispersion() {
         return this._puff;
     }
@@ -198,7 +223,7 @@ class Bomb {
      */
     getGasTemp(r) {
         let pressure = this.getOverpressureAt(r);
-        return this.atmosphere.getTemperature() * (1 + pressure) * (7 + pressure) / (7 + 6 * pressure);
+        return this.atmosphere.temperature * (1 + pressure) * (7 + pressure) / (7 + 6 * pressure);
     }
 
     /**
@@ -239,6 +264,5 @@ class Bomb {
  * 59 degrees F / 15 degrees C
  * @type {Atmosphere}
  */
-Bomb.STANDARD_ATM = new Dispersion.Atmosphere(0, 0, 65, 288.2);
-
+Bomb.STANDARD_ATM = new Atmosphere(0, 0, 65, 288.2);
 export default Bomb;

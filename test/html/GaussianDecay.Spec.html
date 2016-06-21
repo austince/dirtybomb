@@ -14,19 +14,19 @@
             let source = new Dirtybomb.Source(
                     Dirtybomb.SourceType.POINT, // Type of _source
                     151, // emission Rate (g/s)
-                    // Not needed if setting effective _source height manually
+                    // Not needed if _setting effective _source height manually
                     // Don't need these here but just for show
                     null, // height
                     null, // radius (m)
-                    null, // temp (K)
+                    null, // _temp (K)
                     null  // exitVelocity (m/s)
             );
             let atm = new Dirtybomb.Atmosphere(
                     2.5,    // wind speed (m/s)
                     0,  // Sky cover clear ( 0 - 1 )
                     20,  // Solar elevation (degrees)
-                    null, // temp (K)
-                    "rural", // setting ("rural" or default: "urban")
+                    null, // _temp (K)
+                    "rural", // _setting ("rural" or default: "urban")
                     false   // isNight (boolean, default: false)
             );
             let plume = new Dirtybomb.GaussianDecayPlume(

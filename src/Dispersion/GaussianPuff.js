@@ -34,7 +34,7 @@ class GaussianPuff extends GaussianPlume {
      *
      * @returns {number}
      */
-    getMassReleased() {
+    get massReleased() {
         return this._massReleased;
     }
 
@@ -57,7 +57,7 @@ class GaussianPuff extends GaussianPlume {
      * @returns {number} - meters downwind
      */
     getCenterX(t) {
-        let windAtSource = this.getWindSpeedAtSourceHeight();
+        let windAtSource = this.windSpeedAtSourceHeight;
         return integrate(0, t, () => {
             return windAtSource;
         });
@@ -78,7 +78,7 @@ class GaussianPuff extends GaussianPlume {
         let stdZ = this.getStdZ(deltaD);
         let H = this.getEffectiveSourceHeight();
 
-        let a = this.getMassReleased() / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
+        let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
         let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
         let c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
         let d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));

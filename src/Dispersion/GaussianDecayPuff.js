@@ -37,7 +37,7 @@ class GaussianDecayPuff extends GaussianPuff {
      *
      * @returns {number}
      */
-    getHalfLife() {
+    get halfLife() {
         return this._halfLife;
     }
 

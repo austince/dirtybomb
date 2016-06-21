@@ -28,7 +28,7 @@ const ISOTOPES = [
 
 
 /**
- *
+ * Provides a few presets of common nuclear material as well as the ability to define a custom material
   */
 class NuclearMaterial {
 
@@ -93,19 +93,35 @@ class NuclearMaterial {
          */
         this._mass = mass;
     }
-    
+
+    /**
+     * 
+     * @returns {number}
+     */
     get mass() {
         return this._mass;
     }
 
+    /**
+     * 
+     * @returns {number|*}
+     */
     get atomicMass() {
         return this._atomicMass;
     }
-    
+
+    /**
+     * 
+     * @returns {number|*}
+     */
     get halfLife() {
         return this._halfLife;
     }
-    
+
+    /**
+     * 
+     * @returns {string|*}
+     */
     get decayMode() {
         return this._decayMode;
     }
