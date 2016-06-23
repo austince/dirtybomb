@@ -72,7 +72,7 @@
        * @returns {string}
        */
       toString() {
-          return "${this.} Emission rate of ${this.emissionRate} g/s";
+          return `${this.type}: Emission rate of ${this.emissionRate} g/s`;
       }
 
       /**
@@ -757,14 +757,13 @@
 
       /**
        * 
-       * @returns {Source|*}
+       * @returns {Source}
        */
       get source() {
           return this._source;
       }
 
       /**
-       * @type {Atmosphere}
        * @param {Atmosphere} atmosphere
        * @returns {GaussianPlume} For chaining purposes
        */
@@ -774,8 +773,7 @@
       }
 
       /**
-       * @type {Atmosphere}
-       * @returns {Atmosphere|*}
+       * @returns {Atmosphere}
        */
       get atmosphere() {
           return this._atm;
@@ -1770,6 +1768,25 @@
    */
 
   /**
+   * Predefined isotopes:
+       Cobalt 60
+       Strontium 90 
+       Iodine 129 
+       Caesium 135 
+       Caesium 137 
+       Polonium 210 
+       Radon 222 
+       Radium 226 
+       Torium 232 
+       Uranium 233 
+       Uranium 235 
+       Uranium 238 
+       Plutonium 238
+       Plutonium 239
+       Plutonium 240
+       Americium 241
+       Curium 242
+   * 
    * 
    * @type {*[]}
    */
