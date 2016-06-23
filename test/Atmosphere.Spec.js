@@ -18,7 +18,7 @@ describe('Atmosphere', function() {
         
         it('should update wind with number', () => {
             atm.setWindSpeed(3);
-            atm.getWindSpeed().should.be.equal(3);
+            atm.windSpeed.should.be.equal(3);
         });
         
         it('should update wind with array', () => {
@@ -33,9 +33,9 @@ describe('Atmosphere', function() {
        it('should calculate abs from 2d wind direction', () => {
            atm.setWindSpeed([10, 0]);
            let atm2 = new Atmosphere(10, .5, 40, 300, 'rural', true);
-           atm.getWindSpeed().should.be.equal(atm2.getWindSpeed());
+           atm.windSpeed.should.be.equal(atm2.windSpeed);
            
-           atm.getWindSpeed().should.be.equal(10);
+           atm.windSpeed.should.be.equal(10);
        });
     });
     

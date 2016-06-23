@@ -70,7 +70,7 @@ class DynamicGaussianDecayPuff extends DynamicGaussianPuff {
      */
     getConcentration(x, y, z) {
         let unDecayed = super.getConcentration(x, y, z);
-        let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
+        let decayTerm = this.getDecayTerm(x, this.atmosphere.windSpeed);
         return unDecayed * decayTerm;
     }
 }

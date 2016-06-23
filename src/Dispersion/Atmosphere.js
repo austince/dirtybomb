@@ -67,7 +67,7 @@ class Atmosphere {
      * Only windSpeed, _skyCover, and _solarElevation are required.
      * Temperature is required when not _setting effective source height manually
      * The default is urban daytime.
-     * @param {array | number} windSpeed - at ground level (m/s)
+     * @param {Array|number} windSpeed - at ground level (m/s)
      * @param {number} skyCover - a percentage 0-1
      * @param {number} solarElevation - (degrees)
      * @param {number} temperature - (Kelvin)
@@ -127,7 +127,7 @@ class Atmosphere {
      */
     toString() {
         return "Grade: " + this.letterGrade +
-            " Wind at " + this.getWindSpeed() + " m/s," +
+            " Wind at " + this.windSpeed + " m/s," +
             " Sun at " + this._solarElevation + " degrees";
     }
 
@@ -221,8 +221,8 @@ class Atmosphere {
      * 
      * @returns {number} 0-6
      */
-    getGrade() {
-        return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.getWindSpeed(), this.isNight);
+    get grade() {
+        return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.windSpeed, this.isNight);
     }
     
     /**
@@ -230,7 +230,7 @@ class Atmosphere {
      * @returns {string} A - F
      */
     get letterGrade() {
-        return LETTER_GRADES[this.getGrade()];
+        return LETTER_GRADES[this.grade];
     }
 
     /**
@@ -255,7 +255,7 @@ class Atmosphere {
      * 
      * @returns {number} m/s
      */
-    getWindSpeed() {
+    get windSpeed() {
         return this.windSpeedVec.abs();
     }
 
@@ -375,8 +375,8 @@ class Atmosphere {
     getWindSpeedAt(height) {
         // Assumes ground wind speed was measured at 10m
         let windProfile = this._setting === 'urban' ? 
-            WIND_PROFILES[this.getGrade()].urban : WIND_PROFILES[this.getGrade()].rural;
-        return this.getWindSpeed() * Math.pow((height / 10), windProfile);
+            WIND_PROFILES[this.grade].urban : WIND_PROFILES[this.grade].rural;
+        return this.windSpeed * Math.pow((height / 10), windProfile);
     }
 }
 

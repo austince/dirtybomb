@@ -348,7 +348,7 @@
        * Only windSpeed, _skyCover, and _solarElevation are required.
        * Temperature is required when not _setting effective source height manually
        * The default is urban daytime.
-       * @param {array | number} windSpeed - at ground level (m/s)
+       * @param {Array|number} windSpeed - at ground level (m/s)
        * @param {number} skyCover - a percentage 0-1
        * @param {number} solarElevation - (degrees)
        * @param {number} temperature - (Kelvin)
@@ -408,7 +408,7 @@
        */
       toString() {
           return "Grade: " + this.letterGrade +
-              " Wind at " + this.getWindSpeed() + " m/s," +
+              " Wind at " + this.windSpeed + " m/s," +
               " Sun at " + this._solarElevation + " degrees";
       }
 
@@ -502,8 +502,8 @@
        * 
        * @returns {number} 0-6
        */
-      getGrade() {
-          return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.getWindSpeed(), this.isNight);
+      get grade() {
+          return Atmosphere.calculateGrade(this.skyCover, this.solarElevation, this.windSpeed, this.isNight);
       }
       
       /**
@@ -511,7 +511,7 @@
        * @returns {string} A - F
        */
       get letterGrade() {
-          return LETTER_GRADES[this.getGrade()];
+          return LETTER_GRADES[this.grade];
       }
 
       /**
@@ -536,7 +536,7 @@
        * 
        * @returns {number} m/s
        */
-      getWindSpeed() {
+      get windSpeed() {
           return this.windSpeedVec.abs();
       }
 
@@ -656,8 +656,8 @@
       getWindSpeedAt(height) {
           // Assumes ground wind speed was measured at 10m
           let windProfile = this._setting === 'urban' ? 
-              WIND_PROFILES[this.getGrade()].urban : WIND_PROFILES[this.getGrade()].rural;
-          return this.getWindSpeed() * Math.pow((height / 10), windProfile);
+              WIND_PROFILES[this.grade].urban : WIND_PROFILES[this.grade].rural;
+          return this.windSpeed * Math.pow((height / 10), windProfile);
       }
   }
 
@@ -787,7 +787,7 @@
        */
       _getStdYCoeffs(x) {
           let index;
-          let coeffs = STD_Y_COEFFS[this._atm.getGrade()];
+          let coeffs = STD_Y_COEFFS[this._atm.grade];
           if (x < 10000) {
               index = 0;
           } else {
@@ -816,7 +816,7 @@
        */
       _getStdZCoeffs(x) {
           let index;
-          let coeffs = STD_Z_COEFFS[this._atm.getGrade()];
+          let coeffs = STD_Z_COEFFS[this._atm.grade];
           if (x < 500) {
               index = 0;
           } else if (x < 5000) {
@@ -901,7 +901,7 @@
           const F = G * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
           const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack height
 
-          if (this._atm.getGrade() <= 5) {
+          if (this._atm.grade <= 5) {
               // unstable/neutral
               // Gets super funky, ugh science
 
@@ -1033,24 +1033,6 @@
       }
   }
 
-  /**
-   *
-   * http://mathjs.org/examples/advanced/custom_argument_parsing.js.html
-   *
-   * @param {number} start
-   * @param {number} end
-   * @param {function} func
-   * @param {number} [step=0.01]
-   * @returns {number}
-   */
-  function integrate(start, end, func, step = 0.01) {
-      let total = 0;
-      for (let x = start; x < end; x += step) {
-          total += func(x + step / 2) * step;
-      }
-      return total;
-  }
-
   //const GAS_CONSTANT = 8.3144598;
 
   /**
@@ -1103,9 +1085,10 @@
        */
       getCenterX(t) {
           let windAtSource = this.windSpeedAtSourceHeight;
-          return integrate(0, t, () => {
+          return windAtSource * t;
+          /*return integrate(0, t, () => {
               return windAtSource;
-          });
+          });*/
       }
 
       /**
@@ -1195,7 +1178,7 @@
        */
       getConcentration(x, y, z, t) {
           let unDecayed = super.getConcentration(x, y, z, t);
-          let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
+          let decayTerm = this.getDecayTerm(x, this.atmosphere.windSpeed);
           return unDecayed * decayTerm;
       }
   }
@@ -1500,7 +1483,7 @@
        */
       getConcentration(x, y, z) {
           let unDecayed = super.getConcentration(x, y, z);
-          let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
+          let decayTerm = this.getDecayTerm(x, this.atmosphere.windSpeed);
           return unDecayed * decayTerm;
       }
   }
@@ -1979,7 +1962,7 @@
        */
       getConcentration(x, y, z) {
           let unDecayed = super.getConcentration(x, y, z);
-          let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
+          let decayTerm = this.getDecayTerm(x, this.atmosphere.windSpeed);
           return unDecayed * decayTerm;
       }
   }

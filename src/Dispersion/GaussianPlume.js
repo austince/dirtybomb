@@ -138,7 +138,7 @@ class GaussianPlume {
      */
     _getStdYCoeffs(x) {
         let index;
-        let coeffs = STD_Y_COEFFS[this._atm.getGrade()];
+        let coeffs = STD_Y_COEFFS[this._atm.grade];
         if (x < 10000) {
             index = 0;
         } else {
@@ -167,7 +167,7 @@ class GaussianPlume {
      */
     _getStdZCoeffs(x) {
         let index;
-        let coeffs = STD_Z_COEFFS[this._atm.getGrade()];
+        let coeffs = STD_Z_COEFFS[this._atm.grade];
         if (x < 500) {
             index = 0;
         } else if (x < 5000) {
@@ -252,7 +252,7 @@ class GaussianPlume {
         const F = G * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
         const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack height
 
-        if (this._atm.getGrade() <= 5) {
+        if (this._atm.grade <= 5) {
             // unstable/neutral
             // Gets super funky, ugh science
 

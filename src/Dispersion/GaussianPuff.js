@@ -58,9 +58,10 @@ class GaussianPuff extends GaussianPlume {
      */
     getCenterX(t) {
         let windAtSource = this.windSpeedAtSourceHeight;
-        return integrate(0, t, () => {
+        return windAtSource * t;
+        /*return integrate(0, t, () => {
             return windAtSource;
-        });
+        });*/
     }
 
     /**
