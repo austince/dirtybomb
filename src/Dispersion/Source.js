@@ -20,7 +20,7 @@ class Source {
     
     /**
      * 
-     * @param {number} type - The type of source 
+     * @param {string} type - The type of source 
      * @param {number} emissionRate - Maximum hourly emissions rate in g/s
      * @param {number} height - m
      * @param {number} radius - m
@@ -66,7 +66,7 @@ class Source {
      * @returns {string}
      */
     toString() {
-        return "${this.} Emission rate of ${this.emissionRate} g/s";
+        return `${this.type}: Emission rate of ${this.emissionRate} g/s`;
     }
 
     /**

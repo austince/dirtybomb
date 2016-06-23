@@ -24,7 +24,7 @@ const Q_TNT = 4.184;    // One Megaton of TNT == 4.184 Petajoules
 class Bomb {
     /**
      *
-     * @param {number} tntEqvMass - Standardized TNT equivalent kilotons (kt)
+     * @param {number} tntEqvMass - Standardized TNT equivalent kg (kg)
      * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
      * @param {boolean} [isStatic=true] - Determines the type of puff that is used
      */

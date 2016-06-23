@@ -38,8 +38,9 @@ describe('DirtyBomb', function() {
             // Dynamic
             bomb.dispersion.path.length.should.be.equal(0);
             bomb.mass.should.be.equal(20);
-            bomb.dispersion.atmosphere
         });
     });
+    
+    
     
 });

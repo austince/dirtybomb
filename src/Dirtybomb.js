@@ -17,7 +17,7 @@ class Dirtybomb extends Bomb {
 
     /**
      * @param {NuclearMaterial} nuclearMat
-     * @param {number} tntEqvMass - Standardized TNT equivalent kilotons (kt)
+     * @param {number} tntEqvMass - Standardized TNT equivalent (kg)
      * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
      * @param {boolean} [isStatic=true] - Determines the type of puff that is used
      * 

@@ -121,7 +121,7 @@ class DynamicGaussianPuff extends GaussianPuff {
      * @returns {number}
      */
     get distanceFromStart() {
-        return this.getCenter().subtract(this.start).abs();
+        return this.center.subtract(this.start).abs();
     }
 
     /**
@@ -205,7 +205,7 @@ class DynamicGaussianPuff extends GaussianPuff {
 
         // Find the change in x and y directions
         // Todo: use Navier-Stokes equation solver to account for momentum @see equation 16
-        let deltaDVec = this.getAtmosphere().windSpeedVec.multiply(deltaT);    // The change in distance from wind
+        let deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
         let deltaD = deltaDVec.abs();
 
         // Update the standard deviations @see equation 17

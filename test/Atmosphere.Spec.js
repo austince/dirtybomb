@@ -11,11 +11,22 @@ chai.should();
 describe('Atmosphere', function() {
     let atm;
     
-    describe('Constructor', () => {
+    describe('Constructor and setters', () => {
         it('should take basic and optional parameters', () => {
             atm = new Atmosphere(5, .5, 40, 300, 'rural', true);
         }) ;
-
+        
+        it('should update wind with number', () => {
+            atm.setWindSpeed(3);
+            atm.getWindSpeed().should.be.equal(3);
+        });
+        
+        it('should update wind with array', () => {
+            atm.setWindSpeed([5, 1]);
+            atm.windSpeedVec.x.should.be.equal(5);
+            atm.windSpeedVec.y.should.be.equal(1);
+            atm.windSpeedVec.z.should.be.equal(0);
+        });
     });
     
     describe('Wind methods', () => {

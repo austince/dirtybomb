@@ -26,7 +26,7 @@
       
       /**
        * 
-       * @param {number} type - The type of source 
+       * @param {string} type - The type of source 
        * @param {number} emissionRate - Maximum hourly emissions rate in g/s
        * @param {number} height - m
        * @param {number} radius - m
@@ -777,7 +777,7 @@
        * @type {Atmosphere}
        * @returns {Atmosphere|*}
        */
-      getAtmosphere() {
+      get atmosphere() {
           return this._atm;
       }
 
@@ -1197,7 +1197,7 @@
        */
       getConcentration(x, y, z, t) {
           let unDecayed = super.getConcentration(x, y, z, t);
-          let decayTerm = this.getDecayTerm(x, this.getAtmosphere().getWindSpeed());
+          let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
           return unDecayed * decayTerm;
       }
   }
@@ -1316,7 +1316,7 @@
        * @returns {number}
        */
       get distanceFromStart() {
-          return this.getCenter().subtract(this.start).abs();
+          return this.center.subtract(this.start).abs();
       }
 
       /**
@@ -1400,7 +1400,7 @@
 
           // Find the change in x and y directions
           // Todo: use Navier-Stokes equation solver to account for momentum @see equation 16
-          let deltaDVec = this.getAtmosphere().windSpeedVec.multiply(deltaT);    // The change in distance from wind
+          let deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
           let deltaD = deltaDVec.abs();
 
           // Update the standard deviations @see equation 17
@@ -1502,7 +1502,7 @@
        */
       getConcentration(x, y, z) {
           let unDecayed = super.getConcentration(x, y, z);
-          let decayTerm = this.getDecayTerm(x, this.getAtmosphere().getWindSpeed());
+          let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
           return unDecayed * decayTerm;
       }
   }
@@ -1523,7 +1523,7 @@
   class Bomb {
       /**
        *
-       * @param {number} tntEqvMass - Standardized TNT equivalent kilotons (kt)
+       * @param {number} tntEqvMass - Standardized TNT equivalent kg (kg)
        * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
        * @param {boolean} [isStatic=true] - Determines the type of puff that is used
        */
@@ -1962,7 +1962,7 @@
        */
       getConcentration(x, y, z) {
           let unDecayed = super.getConcentration(x, y, z);
-          let decayTerm = this.getDecayTerm(x, this.getAtmosphere().getWindSpeed());
+          let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
           return unDecayed * decayTerm;
       }
   }
@@ -2029,7 +2029,7 @@
 
       /**
        * @param {NuclearMaterial} nuclearMat
-       * @param {number} tntEqvMass - Standardized TNT equivalent kilotons (kt)
+       * @param {number} tntEqvMass - Standardized TNT equivalent (kg)
        * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
        * @param {boolean} [isStatic=true] - Determines the type of puff that is used
        * 

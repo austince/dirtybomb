@@ -108,14 +108,13 @@ class GaussianPlume {
 
     /**
      * 
-     * @returns {Source|*}
+     * @returns {Source}
      */
     get source() {
         return this._source;
     }
 
     /**
-     * @type {Atmosphere}
      * @param {Atmosphere} atmosphere
      * @returns {GaussianPlume} For chaining purposes
      */
@@ -125,10 +124,9 @@ class GaussianPlume {
     }
 
     /**
-     * @type {Atmosphere}
-     * @returns {Atmosphere|*}
+     * @returns {Atmosphere}
      */
-    getAtmosphere() {
+    get atmosphere() {
         return this._atm;
     }
 

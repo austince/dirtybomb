@@ -15,7 +15,7 @@
             console.log('Plume: ' + plume);
             console.log("Effective source height: " + plume.getEffectiveSourceHeight() + " meters.");
             console.log("Windspeed at effective source height: " +
-                    plume.getAtmosphere().getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
+                    plume.atmosphere.getWindSpeedAt(plume.getEffectiveSourceHeight()) + " m/s.");
             let maxX = plume.getMaxConcentrationX();
             console.log("Max concentration at " + maxX + " meters from source.");
             console.log("Max concentration: " + plume.getMaxConcentration() + " micrograms / cubic meter.");
@@ -56,20 +56,20 @@
             // Problem b)
             console.log("----- Problem 1b: -----");
 
-            plume.getAtmosphere().setWindSpeed(2).setSolarElevation(65);
+            plume.atmosphere.setWindSpeed(2).setSolarElevation(65);
 
             printPlumeStats(plume);
 
             // Problem c)
             console.log("----- Problem 1c: -----");
 
-            plume.getAtmosphere().setWindSpeed(7).setSolarElevation(50).setSkyCover(1);
+            plume.atmosphere.setWindSpeed(7).setSolarElevation(50).setSkyCover(1);
             printPlumeStats(plume);
 
             // Problem d)
             console.log("----- Problem 1d: -----");
 
-            plume.getAtmosphere().setWindSpeed(2.5).setSkyCover(0).setIsNight(true);
+            plume.atmosphere.setWindSpeed(2.5).setSkyCover(0).setIsNight(true);
             printPlumeStats(plume);
         })();
 //        console.log("----- All done. Please read the README file for what this needs / is. ");

@@ -67,7 +67,7 @@ class GaussianDecayPuff extends GaussianPuff {
      */
     getConcentration(x, y, z, t) {
         let unDecayed = super.getConcentration(x, y, z, t);
-        let decayTerm = this.getDecayTerm(x, this.getAtmosphere().getWindSpeed());
+        let decayTerm = this.getDecayTerm(x, this.atmosphere.getWindSpeed());
         return unDecayed * decayTerm;
     }
 }
