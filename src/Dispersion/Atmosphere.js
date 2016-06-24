@@ -65,7 +65,7 @@ class Atmosphere {
 
     /**
      * Only windSpeed, _skyCover, and _solarElevation are required.
-     * Temperature is required when not _setting effective source height manually
+     * Temperature is required when not _setting effective source _height manually
      * The default is urban daytime.
      * @param {Array|number} windSpeed - at ground level (m/s)
      * @param {number} skyCover - a percentage 0-1
@@ -235,11 +235,14 @@ class Atmosphere {
 
     /**
      * 
-     * @param speed {number[]|number} m/s
+     * @param speed {Vector|number[]|number} m/s
      * @returns {Atmosphere}
      */
     setWindSpeed(speed) {
-        this._windSpeedVec = Array.isArray(speed) ? Vector.fromArray(speed) : new Vector(speed);
+        if (speed instanceof Vector)
+            this._windSpeedVec = speed.clone();
+        else
+            this._windSpeedVec = Array.isArray(speed) ? Vector.fromArray(speed) : new Vector(speed);
         return this;
     }
 
@@ -368,9 +371,9 @@ class Atmosphere {
     }
     
     /**
-     * Adjusts wind speed to a specific height. Approximation.
+     * Adjusts wind speed to a specific _height. Approximation.
      * @param {number} height - m
-     * @returns {number} The approx. wind speed at a specified height above the ground (m/s)
+     * @returns {number} The approx. wind speed at a specified _height above the ground (m/s)
      */
     getWindSpeedAt(height) {
         // Assumes ground wind speed was measured at 10m

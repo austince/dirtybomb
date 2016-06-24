@@ -32,17 +32,17 @@ class Source {
          * 
          * @type {number}
          */
-        this.emissionRate = emissionRate;
+        this._emissionRate = emissionRate;
         /**
          * 
          * @type {number}
          */
-        this.height = height;
+        this._height = height;
         /**
          * 
          * @type {number}
          */
-        this.radius = radius;
+        this._radius = radius;
         /**
          * 
          * @type {SourceType}
@@ -73,31 +73,31 @@ class Source {
      * 
      * @returns {number}
      */
-    getEmissionRate() {
-        return this.emissionRate;
+    get emissionRate() {
+        return this._emissionRate;
     }
 
     /**
      * 
      * @returns {number}
      */
-    getHeight() {
-        return this.height;
+    get height() {
+        return this._height;
     }
 
     /**
      * 
      * @returns {number}
      */
-    getRadius() {
-        return this.radius;
+    get radius() {
+        return this._radius;
     }
 
     /**
      * 
      * @returns {SourceType}
      */
-    getType() {
+    get type() {
         return this._type;
     }
 
@@ -105,7 +105,7 @@ class Source {
      * 
      * @returns {number}
      */
-    getTemperature() {
+    get temperature() {
         return this._temp;
     }
 
@@ -113,7 +113,7 @@ class Source {
      * 
      * @returns {number}
      */
-    getExitVelocity() {
+    get exitVelocity() {
         return this.exitVel;
     }
 }

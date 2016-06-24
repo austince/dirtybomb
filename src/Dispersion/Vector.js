@@ -31,10 +31,12 @@ Vector.prototype = {
      */
     add: function(v) {
         if (v instanceof Vector) return new Vector(this.x + v.x, this.y + v.y, this.z + v.z);
+        else if (Array.isArray(v)) return Vector.fromArray(v).add(this);
         else return new Vector(this.x + v, this.y + v, this.z + v);
     },
     subtract: function(v) {
         if (v instanceof Vector) return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
+        else if (Array.isArray(v)) return Vector.fromArray(v).subtract(this);
         else return new Vector(this.x - v, this.y - v, this.z - v);
     },
     multiply: function(v) {
