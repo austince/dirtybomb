@@ -1,0 +1,22 @@
+{
+  "name": "dirtybomb",
+  "description": "A dirty bomb model",
+  "main": "build/Dirtybomb.js",
+  "authors": [
+    "<austin.cawley@gmail.com>"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "Dirtybomb",
+    "Terrorism",
+    "Gaussian"
+  ],
+  "homepage": "https://github.com/austincawley/dirtybomb",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

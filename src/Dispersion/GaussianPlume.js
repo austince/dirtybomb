@@ -93,7 +93,7 @@ class GaussianPlume {
      * @returns {string}
      */
     toString() {
-        return '${this._source.toString()} in ${this._atmosphere.toString()}';
+        return '${this.source.toString()} in ${this._atm.toString()}';
     }
 
     /**
@@ -108,39 +108,37 @@ class GaussianPlume {
 
     /**
      * 
-     * @returns {Source|*}
+     * @returns {Source}
      */
-    getSource() {
+    get source() {
         return this._source;
     }
 
     /**
-     * @type {Atmosphere}
      * @param {Atmosphere} atmosphere
      * @returns {GaussianPlume} For chaining purposes
      */
     setAtmosphere(atmosphere) {
-        this._atmosphere = atmosphere;
+        this._atm = atmosphere;
         return this;
     }
 
     /**
-     * @type {Atmosphere}
-     * @returns {Atmosphere|*}
+     * @returns {Atmosphere}
      */
-    getAtmosphere() {
-        return this._atmosphere;
+    get atmosphere() {
+        return this._atm;
     }
 
     /**
      * A helper function for the StdZ calculation
-     * @private
+     * @protected
      * @param {number} x - distance downwind (m)
      * @returns {STD_Y_COEFF}
      */
     _getStdYCoeffs(x) {
         let index;
-        let coeffs = STD_Y_COEFFS[this._atmosphere.getGrade()];
+        let coeffs = STD_Y_COEFFS[this._atm.getGrade()];
         if (x < 10000) {
             index = 0;
         } else {
@@ -150,6 +148,7 @@ class GaussianPlume {
     }
 
     /**
+     * Brookhaven sigma
      * The crosswind distance standard deviation for a distance x downwind.
      * To be used in a Gaussian distribution
      * @param {number} x - distance downwind (m)
@@ -162,13 +161,13 @@ class GaussianPlume {
 
     /**
      * A helper function for the StdZ calculation
-     * @private
+     * @protected
      * @param {number} x - distance downwind (m)
      * @returns {STD_Z_COEFF}
      */
     _getStdZCoeffs(x) {
-        let coeffs = STD_Z_COEFFS[this._atmosphere.getGrade()];
         let index;
+        let coeffs = STD_Z_COEFFS[this._atm.getGrade()];
         if (x < 500) {
             index = 0;
         } else if (x < 5000) {
@@ -181,6 +180,7 @@ class GaussianPlume {
     }
 
     /**
+     * Brookhaven sigma
      * The vertical distance standard deviation for a distance x downwind.
      * To be used in a Gaussian distribution
      * @param {number} x - distance downwind (m)
@@ -195,8 +195,8 @@ class GaussianPlume {
      * 
      * @returns {number} m/s
      */
-    getWindSpeedAtSourceHeight() {
-        return this._atmosphere.getWindSpeedAt(this.getEffectiveSourceHeight());
+    get windSpeedAtSourceHeight() {
+        return this._atm.getWindSpeedAt(this.getEffectiveSourceHeight());
     }
 
     /**
@@ -218,10 +218,15 @@ class GaussianPlume {
             return this._effSrcHeight;
         }
         let deltaH = this.getMaxRise(0);
-        this._effSrcHeight = this._source.getHeight() + deltaH;
+        this._effSrcHeight = this.source.getHeight() + deltaH;
         return this._effSrcHeight;
     }
 
+    /**
+     * 
+     * @param x
+     * @returns {number}
+     */
     getMeanHeight(x) {
         // Should use integrals but need to research how to load a nicer math library in hur
 
@@ -239,21 +244,21 @@ class GaussianPlume {
         // Grades 1 - 5 are assumed unstable/neutral, 6 - 7 are assumed stable
         // Both the momentum dominated and buoyancy dominated methods should be calculated, then use the max
         let bDeltaH, mDeltaH; // Max plume rise buoyancy, momentum dominated resp.
-        const srcRad = this._source.getRadius();
-        const srcTemp = this._source.getTemperature();
-        const srcHeight = this._source.getHeight();
-        const srcExitVel = this._source.getExitVelocity();
-        const ambTemp = this._atmosphere.getTemperature();
-        const F = g * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
-        const U = this._atmosphere.getWindSpeedAt(srcHeight); // wind speed at stack height
+        const srcRad = this.source.getRadius();
+        const srcTemp = this.source.getTemperature();
+        const srcHeight = this.source.getHeight();
+        const srcExitVel = this.source.getExitVelocity();
+        const ambTemp = this._atm.temperature;
+        const F = G * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
+        const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack height
 
-        if (this._atmosphere.getGrade() <= 5) {
+        if (this._atm.getGrade() <= 5) {
             // unstable/neutral
             // Gets super funky, ugh science
 
             // Distance to Maximum Plume Rise
             let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
-            // Will use 0 if calculating from the _source. Need to read more about this.
+            // Will use 0 if calculating from the source. Need to read more about this.
             if (x == 0 || x > 3.5 * xStar) {
                 x = xStar;
             }
@@ -261,7 +266,7 @@ class GaussianPlume {
             mDeltaH = (3 * srcExitVel * (2 * srcRad)) / U;
         } else {
             // stable
-            const s = this._atmosphere.getLetterGrade() === 'E' ? 0.018: 0.025; //  g/ambientTemp
+            const s = this._atm.letterGrade === 'E' ? 0.018: 0.025; //  g/ambientTemp
             bDeltaH = 2.6 * Math.pow(F / (U * s), .333);
             mDeltaH = 1.5 * Math.pow(srcExitVel * srcRad, .667) * Math.pow(U, -0.333) * Math.pow(s, -0.166);
         }
@@ -287,7 +292,7 @@ class GaussianPlume {
         let stdZ = this.getStdZ(x);
         let H = this.getEffectiveSourceHeight();
 
-        let a = (this._source.getEmissionRate() * 1000000) / (Math.PI * stdY * stdZ * this.getWindSpeedAtSourceHeight());
+        let a = (this.source.getEmissionRate() * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
         let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
 
         return a * b;
@@ -310,8 +315,8 @@ class GaussianPlume {
     /**
      * Calculates the concentration at a given x,y,z coordinate.
      * Must be downwind
-     * @param {number} x - Meters downwind of _source, greater than 0
-     * @param {number} y - Meters crosswind of _source
+     * @param {number} x - Meters downwind of source, greater than 0
+     * @param {number} y - Meters crosswind of source
      * @param {number} z - Meters vertical of ground
      * @returns {number} micrograms / cubic meter
      *
@@ -325,9 +330,9 @@ class GaussianPlume {
         let stdZ = this.getStdZ(x);
         // Effective stack height
         let H = this.getEffectiveSourceHeight();
-        let U = this.getWindSpeedAtSourceHeight();
+        let U = this.windSpeedAtSourceHeight;
 
-        let a = this._source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
+        let a = this.source.getEmissionRate() / (2 * Math.PI * stdY * stdZ * U);
         let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
         let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
         let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
@@ -338,7 +343,7 @@ class GaussianPlume {
 
     /**
      * Calculates the stdY, stdZ, and concentrations for a list of x coordinates
-     *  directly downwind of the _source
+     *  directly downwind of the source
      * Useful in creating graphs / processing large amounts of data at once
      * @param {number[]} xs - a list of x's
      * @returns {Stat[]} a list of stats

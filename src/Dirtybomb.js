@@ -3,24 +3,59 @@
  * file: Dirtybomb.js
  * 
  */
-import GaussianPlume, {
-    Atmosphere,
-    Source,
-    SourceType
-} from './GaussianPlume/GaussianPlume';
-import GaussianDecayPlume from './GaussianPlume/GaussianDecayPlume';
+
+import GaussianDecayPuff from './Dispersion/GaussianDecayPuff';
+import DynamicGaussianDecayPuff from './Dispersion/DynamicGaussianDecayPuff';
+import Bomb from './Bomb';
+import NuclearMaterial from './NuclearMaterial';
+import Dispersion from './Dispersion/Dispersion';
 
 /**
- * Everything is exported through the Dirtybomb object
- * Potentially going to export Gaussian Plumes as their own modules
- * @type {Object}
+ * A simple dirtybomb. Assumes all nuclear material is released into the atmosphere
  */
-const Dirtybomb = {};
+class Dirtybomb extends Bomb {
 
-Dirtybomb.GaussianPlume = GaussianPlume;
-Dirtybomb.GaussianDecayPlume = GaussianDecayPlume;
-Dirtybomb.Atmosphere = Atmosphere;
-Dirtybomb.Source = Source;
-Dirtybomb.SourceType = SourceType;
+    /**
+     * @param {NuclearMaterial} nuclearMat
+     * @param {number} tntEqvMass - Standardized TNT equivalent (kg)
+     * @param {Atmosphere} [atmosphere=Bomb.STANDARD_ATM]
+     * @param {boolean} [isStatic=true] - Determines the type of puff that is used
+     * 
+     */
+    constructor(nuclearMat, tntEqvMass, atmosphere = Bomb.STANDARD_ATM, isStatic = true) {
+        super(tntEqvMass, atmosphere, isStatic);
+        
+        /**
+         * @type {NuclearMaterial}
+         * @private
+         */
+        this._nucMat = nuclearMat;
 
+        /**
+         * Either
+         * @type {GaussianPuff}
+         * @private
+         */
+        this._puff;
+        
+        if (isStatic) {
+            this._puff = new GaussianDecayPuff(
+                atmosphere,
+                this.source,
+                nuclearMat.mass,
+                nuclearMat.halfLife
+            );
+        } else {
+            this._puff = new DynamicGaussianDecayPuff(
+                atmosphere,
+                this.source,
+                nuclearMat.mass,
+                nuclearMat.halfLife
+            )
+        }
+    }
+}
+
+export {Dispersion};
+export {NuclearMaterial};
 export default Dirtybomb;
