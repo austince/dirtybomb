@@ -38,17 +38,17 @@
            * 
            * @type {number}
            */
-          this.emissionRate = emissionRate;
+          this._emissionRate = emissionRate;
           /**
            * 
            * @type {number}
            */
-          this.height = height;
+          this._height = height;
           /**
            * 
            * @type {number}
            */
-          this.radius = radius;
+          this._radius = radius;
           /**
            * 
            * @type {SourceType}
@@ -79,31 +79,31 @@
        * 
        * @returns {number}
        */
-      getEmissionRate() {
-          return this.emissionRate;
+      get emissionRate() {
+          return this._emissionRate;
       }
 
       /**
        * 
        * @returns {number}
        */
-      getHeight() {
-          return this.height;
+      get height() {
+          return this._height;
       }
 
       /**
        * 
        * @returns {number}
        */
-      getRadius() {
-          return this.radius;
+      get radius() {
+          return this._radius;
       }
 
       /**
        * 
        * @returns {SourceType}
        */
-      getType() {
+      get type() {
           return this._type;
       }
 
@@ -111,7 +111,7 @@
        * 
        * @returns {number}
        */
-      getTemperature() {
+      get temperature() {
           return this._temp;
       }
 
@@ -119,7 +119,7 @@
        * 
        * @returns {number}
        */
-      getExitVelocity() {
+      get exitVelocity() {
           return this.exitVel;
       }
   }
@@ -159,10 +159,12 @@
        */
       add: function(v) {
           if (v instanceof Vector) return new Vector(this.x + v.x, this.y + v.y, this.z + v.z);
+          else if (Array.isArray(v)) return Vector.fromArray(v).add(this);
           else return new Vector(this.x + v, this.y + v, this.z + v);
       },
       subtract: function(v) {
           if (v instanceof Vector) return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
+          else if (Array.isArray(v)) return Vector.fromArray(v).subtract(this);
           else return new Vector(this.x - v, this.y - v, this.z - v);
       },
       multiply: function(v) {
@@ -346,7 +348,7 @@
 
       /**
        * Only windSpeed, _skyCover, and _solarElevation are required.
-       * Temperature is required when not _setting effective source height manually
+       * Temperature is required when not _setting effective source _height manually
        * The default is urban daytime.
        * @param {array | number} windSpeed - at ground level (m/s)
        * @param {number} skyCover - a percentage 0-1
@@ -516,11 +518,14 @@
 
       /**
        * 
-       * @param speed {number[]|number} m/s
+       * @param speed {Vector|number[]|number} m/s
        * @returns {Atmosphere}
        */
       setWindSpeed(speed) {
-          this._windSpeedVec = Array.isArray(speed) ? Vector.fromArray(speed) : new Vector(speed);
+          if (speed instanceof Vector)
+              this._windSpeedVec = speed.clone();
+          else
+              this._windSpeedVec = Array.isArray(speed) ? Vector.fromArray(speed) : new Vector(speed);
           return this;
       }
 
@@ -649,9 +654,9 @@
       }
       
       /**
-       * Adjusts wind speed to a specific height. Approximation.
+       * Adjusts wind speed to a specific _height. Approximation.
        * @param {number} height - m
-       * @returns {number} The approx. wind speed at a specified height above the ground (m/s)
+       * @returns {number} The approx. wind speed at a specified _height above the ground (m/s)
        */
       getWindSpeedAt(height) {
           // Assumes ground wind speed was measured at 10m
@@ -735,6 +740,13 @@
       constructor(atmosphere, source) {
           this.setAtmosphere(atmosphere);
           this.addSource(source);
+
+          /**
+           *
+           * @type {number}
+           * @private
+           */
+          this._manualEffSrcHeight;
       }
 
       /**
@@ -847,7 +859,7 @@
        * @returns {number} m/s
        */
       get windSpeedAtSourceHeight() {
-          return this._atm.getWindSpeedAt(this.getEffectiveSourceHeight());
+          return this._atm.getWindSpeedAt(this.effectiveSourceHeight);
       }
 
       /**
@@ -856,20 +868,22 @@
        * @returns {GaussianPlume} For chaining purposes
        */
       setEffectiveSourceHeight(height) {
-          this._effSrcHeight = height;
+          this._manualEffSrcHeight = height;
           return this;
       }
       /**
        *  Takes into account the wind and other factors into account.
        *  Should potentially move this to the Source class
-       *  @returns {number} the effective source height
+       *  @returns {number} the effective source _height
        *  */
-      getEffectiveSourceHeight() {
-          if (this._effSrcHeight) {
+      get effectiveSourceHeight() {
+          // If there has been a manually set source height
+          // Causes problems if the plume is dynamic
+          if (this._manualEffSrcHeight) {
               return this._effSrcHeight;
           }
           let deltaH = this.getMaxRise(0);
-          this._effSrcHeight = this.source.getHeight() + deltaH;
+          this._effSrcHeight = this.source.height + deltaH;
           return this._effSrcHeight;
       }
 
@@ -895,13 +909,13 @@
           // Grades 1 - 5 are assumed unstable/neutral, 6 - 7 are assumed stable
           // Both the momentum dominated and buoyancy dominated methods should be calculated, then use the max
           let bDeltaH, mDeltaH; // Max plume rise buoyancy, momentum dominated resp.
-          const srcRad = this.source.getRadius();
-          const srcTemp = this.source.getTemperature();
-          const srcHeight = this.source.getHeight();
-          const srcExitVel = this.source.getExitVelocity();
+          const srcRad = this.source.radius;
+          const srcTemp = this.source.temperature;
+          const srcHeight = this.source.height;
+          const srcExitVel = this.source.exitVelocity;
           const ambTemp = this._atm.temperature;
           const F = G * srcExitVel * Math.pow(srcRad, 2) * (srcTemp - ambTemp) / srcTemp;
-          const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack height
+          const U = this._atm.getWindSpeedAt(srcHeight); // wind speed at stack _height
 
           if (this._atm.getGrade() <= 5) {
               // unstable/neutral
@@ -937,13 +951,13 @@
        * Calculates the maximum concentration dispersed
        * @returns {number} micrograms / cubic meters
        */
-      getMaxConcentration() {
-          let x = this.getMaxConcentrationX();
+      get maxConcentration() {
+          let x = this.maxConcentrationX;
           let stdY = this.getStdY(x);
           let stdZ = this.getStdZ(x);
-          let H = this.getEffectiveSourceHeight();
+          let H = this.effectiveSourceHeight;
 
-          let a = (this.source.getEmissionRate() * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
+          let a = (this.source.emissionRate * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
           let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
 
           return a * b;
@@ -953,11 +967,11 @@
        * Calculates the distance downwind of the maximum concentration
        * @returns {number} micrograms / cubic meter
        */
-      getMaxConcentrationX() {
+      get maxConcentrationX() {
           // If unknown, set x to 5000 meters
           let stdYCoeffs = this._getStdYCoeffs(5000);  // c , d
           let stdZCoeffs = this._getStdZCoeffs(5000);  // a , b
-          let H = this.getEffectiveSourceHeight();
+          let H = this.effectiveSourceHeight;
 
           let pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
           return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
@@ -979,11 +993,11 @@
           // First part of Gaussian equation 1 found on page 2
           let stdY = this.getStdY(x);
           let stdZ = this.getStdZ(x);
-          // Effective stack height
-          let H = this.getEffectiveSourceHeight();
+          // Effective stack _height
+          let H = this.effectiveSourceHeight;
           let U = this.windSpeedAtSourceHeight;
 
-          let a = this.source.getEmissionRate() / (2 * Math.PI * stdY * stdZ * U);
+          let a = this.source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
           let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
           let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
           let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
@@ -1098,6 +1112,13 @@
           );
       }*/
 
+      get maxConcentration() {
+          console.error("Not currently supported for Gaussian Puff, only Plume.");
+      }
+      get maxConcentrationX() {
+          console.error("Not currently supported for Gaussian Puff, only Plume.");
+      }
+      
       /**
        * The center at x meters downstream after t seconds
        * @param {number} t - seconds after release
@@ -1115,7 +1136,7 @@
        * @override
        * @param {number} x - downwind (m)
        * @param {number} y - crosswind (m)
-       * @param {number} z - height (m)
+       * @param {number} z - _height (m)
        * @param {number} t - seconds from start
        * @returns {number}
        */
@@ -1123,7 +1144,7 @@
           let deltaD = this.getCenterX(t);
           let stdY = this.getStdY(deltaD);
           let stdZ = this.getStdZ(deltaD);
-          let H = this.getEffectiveSourceHeight();
+          let H = this.effectiveSourceHeight;
 
           let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
           let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
@@ -1175,7 +1196,7 @@
        * Read URAaTM pg 281 - 285
        * @see https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
        * @param {number} x - downwind distance (m)
-       * @param {number} windSpeed - at source height (m/s)
+       * @param {number} windSpeed - at source _height (m/s)
        * @returns {number} Decay term
        */
       getDecayTerm(x, windSpeed) {
@@ -1192,7 +1213,7 @@
        * @override
        * @param {number} x - downwind (m)
        * @param {number} y - crosswind (m)
-       * @param {number} z - height (m)
+       * @param {number} z - _height (m)
        * @param {number} t - seconds from start
        */
       getConcentration(x, y, z, t) {
@@ -1228,7 +1249,7 @@
            * @type {Vector}
            * @private
            */
-          this._currentCenter = center ? Vector.fromArray(center) : new Vector(0, 0, this.getEffectiveSourceHeight());
+          this._currentCenter = center ? Vector.fromArray(center) : new Vector(0, 0, this.effectiveSourceHeight);
 
           /**
            * @type {Vector}
@@ -1381,7 +1402,7 @@
       get vertDist() {
           return this._vertDist;
       }
-      
+
       /**
        * Moves the puff along by t seconds
        * @see http://www.sciencedirect.com/science/article/pii/S0093641303000247 Section 3.2, equation 14
@@ -1420,13 +1441,15 @@
        * @override
        * @param {number} x - downwind (m)
        * @param {number} y - crosswind (m)
-       * @param {number} z - height (m)
+       * @param {number} z - _height (m)
        * @returns {number}
        */
       getConcentration(x, y, z) {
+          if (this.time == 0) return 0;
+
           let stdY = this.stdY;
           let stdZ = this.stdZ;
-          let H = this.getEffectiveSourceHeight();
+          let H = this.effectiveSourceHeight;
 
           let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
           let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
@@ -1473,7 +1496,7 @@
        *
        * @returns {number}
        */
-      getHalfLife() {
+      get halfLife() {
           return this._halfLife;
       }
 
@@ -1481,7 +1504,7 @@
        * Read URAaTM pg 281 - 285
        * @see https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
        * @param {number} x - downwind distance (m)
-       * @param {number} windSpeed - at source height (m/s)
+       * @param {number} windSpeed - at source _height (m/s)
        * @returns {number} Decay term
        */
       getDecayTerm(x, windSpeed) {
@@ -1498,7 +1521,7 @@
        * @override
        * @param {number} x - downwind (m)
        * @param {number} y - crosswind (m)
-       * @param {number} z - height (m)
+       * @param {number} z - _height (m)
        */
       getConcentration(x, y, z) {
           let unDecayed = super.getConcentration(x, y, z);
@@ -1941,7 +1964,7 @@
        * Read URAaTM pg 281 - 285
        * @see https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
        * @param {number} x - downwind distance (m)
-       * @param {number} windSpeed - at source height (m/s)
+       * @param {number} windSpeed - at source _height (m/s)
        * @returns {number} Decay term
        */
       getDecayTerm(x, windSpeed) {

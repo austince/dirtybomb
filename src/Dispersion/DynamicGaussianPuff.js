@@ -33,7 +33,7 @@ class DynamicGaussianPuff extends GaussianPuff {
          * @type {Vector}
          * @private
          */
-        this._currentCenter = center ? Vector.fromArray(center) : new Vector(0, 0, this.getEffectiveSourceHeight());
+        this._currentCenter = center ? Vector.fromArray(center) : new Vector(0, 0, this.effectiveSourceHeight);
 
         /**
          * @type {Vector}
@@ -186,7 +186,7 @@ class DynamicGaussianPuff extends GaussianPuff {
     get vertDist() {
         return this._vertDist;
     }
-    
+
     /**
      * Moves the puff along by t seconds
      * @see http://www.sciencedirect.com/science/article/pii/S0093641303000247 Section 3.2, equation 14
@@ -225,13 +225,15 @@ class DynamicGaussianPuff extends GaussianPuff {
      * @override
      * @param {number} x - downwind (m)
      * @param {number} y - crosswind (m)
-     * @param {number} z - height (m)
+     * @param {number} z - _height (m)
      * @returns {number}
      */
     getConcentration(x, y, z) {
+        if (this.time == 0) return 0;
+
         let stdY = this.stdY;
         let stdZ = this.stdZ;
-        let H = this.getEffectiveSourceHeight();
+        let H = this.effectiveSourceHeight;
 
         let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
         let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));

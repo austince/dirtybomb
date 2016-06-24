@@ -51,6 +51,13 @@ class GaussianPuff extends GaussianPlume {
         );
     }*/
 
+    get maxConcentration() {
+        console.error("Not currently supported for Gaussian Puff, only Plume.");
+    }
+    get maxConcentrationX() {
+        console.error("Not currently supported for Gaussian Puff, only Plume.");
+    }
+    
     /**
      * The center at x meters downstream after t seconds
      * @param {number} t - seconds after release
@@ -68,7 +75,7 @@ class GaussianPuff extends GaussianPlume {
      * @override
      * @param {number} x - downwind (m)
      * @param {number} y - crosswind (m)
-     * @param {number} z - height (m)
+     * @param {number} z - _height (m)
      * @param {number} t - seconds from start
      * @returns {number}
      */
@@ -76,7 +83,7 @@ class GaussianPuff extends GaussianPlume {
         let deltaD = this.getCenterX(t);
         let stdY = this.getStdY(deltaD);
         let stdZ = this.getStdZ(deltaD);
-        let H = this.getEffectiveSourceHeight();
+        let H = this.effectiveSourceHeight;
 
         let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
         let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));

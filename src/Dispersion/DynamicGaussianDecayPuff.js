@@ -41,7 +41,7 @@ class DynamicGaussianDecayPuff extends DynamicGaussianPuff {
      *
      * @returns {number}
      */
-    getHalfLife() {
+    get halfLife() {
         return this._halfLife;
     }
 
@@ -49,7 +49,7 @@ class DynamicGaussianDecayPuff extends DynamicGaussianPuff {
      * Read URAaTM pg 281 - 285
      * @see https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
      * @param {number} x - downwind distance (m)
-     * @param {number} windSpeed - at source height (m/s)
+     * @param {number} windSpeed - at source _height (m/s)
      * @returns {number} Decay term
      */
     getDecayTerm(x, windSpeed) {
@@ -66,7 +66,7 @@ class DynamicGaussianDecayPuff extends DynamicGaussianPuff {
      * @override
      * @param {number} x - downwind (m)
      * @param {number} y - crosswind (m)
-     * @param {number} z - height (m)
+     * @param {number} z - _height (m)
      */
     getConcentration(x, y, z) {
         let unDecayed = super.getConcentration(x, y, z);
