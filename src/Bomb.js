@@ -173,7 +173,7 @@ class Bomb {
      * @returns {number} - (m)
      */
     get cloudRadius() {
-        let mainRad = this._getMainCloudRadius();
+        const mainRad = this._getMainCloudRadius();
         if (this.weaponYield < 20) {
             return 0.5 * mainRad;
         }
@@ -210,7 +210,7 @@ class Bomb {
      * @returns {number} velocity (m/s)
      */
     getGasVelocity(r) {
-        let pressure = this.getOverpressureAt(r);
+        const pressure = this.getOverpressureAt(r);
         // Simplified for standard atmosphere
         return 243 * pressure / Math.sqrt(1 + 0.86 * pressure);
     }
@@ -222,7 +222,7 @@ class Bomb {
      * @returns {number} temperature (K)
      */
     getGasTemp(r) {
-        let pressure = this.getOverpressureAt(r);
+        const pressure = this.getOverpressureAt(r);
         return this.atmosphere.temperature * (1 + pressure) * (7 + pressure) / (7 + 6 * pressure);
     }
 

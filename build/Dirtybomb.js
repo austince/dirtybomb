@@ -799,7 +799,7 @@
        */
       _getStdYCoeffs(x) {
           let index;
-          let coeffs = STD_Y_COEFFS[this._atm.grade];
+          const coeffs = STD_Y_COEFFS[this._atm.grade];
           if (x < 10000) {
               index = 0;
           } else {
@@ -816,7 +816,7 @@
        * @returns {number} crosswind standard deviation at x meters downwind (m)
        */
       getStdY(x) {
-          let coeffs = this._getStdYCoeffs(x);
+          const coeffs = this._getStdYCoeffs(x);
           return coeffs.c * Math.pow(x, coeffs.d);
       }
 
@@ -828,7 +828,7 @@
        */
       _getStdZCoeffs(x) {
           let index;
-          let coeffs = STD_Z_COEFFS[this._atm.grade];
+          const coeffs = STD_Z_COEFFS[this._atm.grade];
           if (x < 500) {
               index = 0;
           } else if (x < 5000) {
@@ -848,7 +848,7 @@
        * @returns {number}
        */
       getStdZ(x) {
-          let coeffs = this._getStdZCoeffs(x);
+          const coeffs = this._getStdZCoeffs(x);
           return coeffs.a * Math.pow(x, coeffs.b);
       }
 
@@ -880,7 +880,7 @@
           if (this._manualEffSrcHeight) {
               return this._effSrcHeight;
           }
-          let deltaH = this.getMaxRise(0);
+          const deltaH = this.getMaxRise(0);
           this._effSrcHeight = this.source.height + deltaH;
           return this._effSrcHeight;
       }
@@ -920,7 +920,7 @@
               // Gets super funky, ugh science
 
               // Distance to Maximum Plume Rise
-              let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
+              const xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
               // Will use 0 if calculating from the source. Need to read more about this.
               if (x == 0 || x > 3.5 * xStar) {
                   x = xStar;
@@ -950,13 +950,13 @@
        * @returns {number} micrograms / cubic meters
        */
       get maxConcentration() {
-          let x = this.maxConcentrationX;
-          let stdY = this.getStdY(x);
-          let stdZ = this.getStdZ(x);
-          let H = this.effectiveSourceHeight;
+          const x = this.maxConcentrationX;
+          const stdY = this.getStdY(x);
+          const stdZ = this.getStdZ(x);
+          const H = this.effectiveSourceHeight;
 
-          let a = (this.source.emissionRate * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
-          let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
+          const a = (this.source.emissionRate) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
+          const b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
 
           return a * b;
       }
@@ -967,11 +967,11 @@
        */
       get maxConcentrationX() {
           // If unknown, set x to 5000 meters
-          let stdYCoeffs = this._getStdYCoeffs(5000);  // c , d
-          let stdZCoeffs = this._getStdZCoeffs(5000);  // a , b
-          let H = this.effectiveSourceHeight;
+          const stdYCoeffs = this._getStdYCoeffs(5000);  // c , d
+          const stdZCoeffs = this._getStdZCoeffs(5000);  // a , b
+          const H = this.effectiveSourceHeight;
 
-          let pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
+          const pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
           return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
       }
 
@@ -980,28 +980,30 @@
        * Must be downwind
        * @param {number} x - Meters downwind of source, greater than 0
        * @param {number} y - Meters crosswind of source
-       * @param {number} z - Meters vertical of ground
+       * @param {number} [z=0] - Meters vertical of ground
        * @returns {number} micrograms / cubic meter
        *
        * @example
        * getConcentration(200, 300, 10)
        * Calculates at 200 meters downwind, 300 east, 10 high
        */
-      getConcentration(x, y, z) {
+      getConcentration(x, y, z = 0) {
           // First part of Gaussian equation 1 found on page 2
-          let stdY = this.getStdY(x);
-          let stdZ = this.getStdZ(x);
+          const stdY = this.getStdY(x);
+          const stdZ = this.getStdZ(x);
           // Effective stack _height
-          let H = this.effectiveSourceHeight;
-          let U = this.windSpeedAtSourceHeight;
+          const H = this.effectiveSourceHeight;
+          const U = this.windSpeedAtSourceHeight;
 
-          let a = this.source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
-          let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
-          let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
-          let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
+          const a = this.source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
+          const b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
+          const c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
+          const d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
           
           // Put it all together! get
-          return a * b * (c + d);
+          const conc = a * b * (c + d);
+          // return 0 if it's not a number
+          return isNaN(conc) ? 0 : conc;
       }
 
       /**
@@ -1105,7 +1107,7 @@
        * @returns {number} - meters downwind
        */
       getCenterX(t) {
-          let windAtSource = this.windSpeedAtSourceHeight;
+          const windAtSource = this.windSpeedAtSourceHeight;
           return windAtSource * t;
           /*return integrate(0, t, () => {
               return windAtSource;
@@ -1117,22 +1119,23 @@
        * @override
        * @param {number} x - downwind (m)
        * @param {number} y - crosswind (m)
-       * @param {number} z - _height (m)
+       * @param {number} z - height (m)
        * @param {number} t - seconds from start
        * @returns {number}
        */
       getConcentration(x, y, z, t) {
-          let deltaD = this.getCenterX(t);
-          let stdY = this.getStdY(deltaD);
-          let stdZ = this.getStdZ(deltaD);
-          let H = this.effectiveSourceHeight;
+          const deltaD = this.getCenterX(t);
+          const stdY = this.getStdY(deltaD);
+          const stdZ = this.getStdZ(deltaD);
+          const H = this.effectiveSourceHeight;
 
-          let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
-          let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
-          let c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
-          let d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
+          const a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
+          const b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
+          const c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
+          const d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
 
-          return a * b * c * d;
+          const conc = a * b * c * d;
+          return isNaN(conc) ? 0 : conc;
       }
   }
 
@@ -1392,9 +1395,9 @@
        */
       step(deltaT) {
           // update vertHoriz and vertDist
-          let x = this.distanceTraveled;
-          let stdYCoeffs = super._getStdYCoeffs(x);
-          let stdZCoeffs = super._getStdZCoeffs(x);
+          const x = this.distanceTraveled;
+          const stdYCoeffs = super._getStdYCoeffs(x);
+          const stdZCoeffs = super._getStdZCoeffs(x);
 
           // Update the Virtual horizontal and the vertical distance @see equation 15
           this._virtHoriz = Math.pow((this.stdY / stdYCoeffs.c), (1 / stdYCoeffs.d));
@@ -1402,8 +1405,8 @@
 
           // Find the change in x and y directions
           // Todo: use Navier-Stokes equation solver to account for momentum @see equation 16
-          let deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
-          let deltaD = deltaDVec.abs();
+          const deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
+          const deltaD = deltaDVec.abs();
 
           // Update the standard deviations @see equation 17
           this._stdY = stdYCoeffs.c * Math.pow(this.virtHoriz + deltaD, stdYCoeffs.d);
@@ -1428,16 +1431,17 @@
       getConcentration(x, y, z) {
           if (this.time == 0) return 0;
 
-          let stdY = this.stdY;
-          let stdZ = this.stdZ;
-          let H = this.effectiveSourceHeight;
+          const stdY = this.stdY;
+          const stdZ = this.stdZ;
+          const H = this.effectiveSourceHeight;
 
-          let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
-          let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
-          let c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
-          let d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
+          const a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
+          const b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
+          const c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
+          const d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
 
-          return a * b * c * d;
+          const conc = a * b * c * d;
+          return isNaN(conc) ? 0 : conc;
       }
 
   }
@@ -1676,7 +1680,7 @@
        * @returns {number} - (m)
        */
       get cloudRadius() {
-          let mainRad = this._getMainCloudRadius();
+          const mainRad = this._getMainCloudRadius();
           if (this.weaponYield < 20) {
               return 0.5 * mainRad;
           }
@@ -1713,7 +1717,7 @@
        * @returns {number} velocity (m/s)
        */
       getGasVelocity(r) {
-          let pressure = this.getOverpressureAt(r);
+          const pressure = this.getOverpressureAt(r);
           // Simplified for standard atmosphere
           return 243 * pressure / Math.sqrt(1 + 0.86 * pressure);
       }
@@ -1725,7 +1729,7 @@
        * @returns {number} temperature (K)
        */
       getGasTemp(r) {
-          let pressure = this.getOverpressureAt(r);
+          const pressure = this.getOverpressureAt(r);
           return this.atmosphere.temperature * (1 + pressure) * (7 + pressure) / (7 + 6 * pressure);
       }
 
