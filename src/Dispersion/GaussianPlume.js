@@ -301,7 +301,7 @@ class GaussianPlume {
         let stdZ = this.getStdZ(x);
         let H = this.effectiveSourceHeight;
 
-        let a = (this.source.emissionRate * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
+        let a = (this.source.emissionRate) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
         let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
 
         return a * b;
@@ -326,14 +326,14 @@ class GaussianPlume {
      * Must be downwind
      * @param {number} x - Meters downwind of source, greater than 0
      * @param {number} y - Meters crosswind of source
-     * @param {number} z - Meters vertical of ground
+     * @param {number} [z=0] - Meters vertical of ground
      * @returns {number} micrograms / cubic meter
      *
      * @example
      * getConcentration(200, 300, 10)
      * Calculates at 200 meters downwind, 300 east, 10 high
      */
-    getConcentration(x, y, z) {
+    getConcentration(x, y, z = 0) {
         // First part of Gaussian equation 1 found on page 2
         let stdY = this.getStdY(x);
         let stdZ = this.getStdZ(x);
