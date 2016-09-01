@@ -78,7 +78,7 @@ class Bomb {
         
         
         if (this.weaponYield > 1000) {
-            console.warn("WARNING: this bomb library is mean for bombs weaponYields under 1000.");
+            console.warn("WARNING: this bomb library is meant for bombs weaponYields under 1000.");
         }
     }
 
@@ -192,7 +192,8 @@ class Bomb {
     }
 
     /**
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 3
+     * equation 3
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} - pressure (atm)
      */
@@ -205,7 +206,8 @@ class Bomb {
 
     /**
      * Velocity of gas in behind shock wave front
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 5.2
+     * equation 5.2
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} velocity (m/s)
      */
@@ -217,7 +219,8 @@ class Bomb {
 
     /**
      * Temperature of gas in shock wave front
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 5.3
+     * equation 5.3
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} temperature (K)
      */
@@ -228,7 +231,8 @@ class Bomb {
 
     /**
      * Positive Shock Phase Duration
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 4
+     * equation 4
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} duration (s)
      */

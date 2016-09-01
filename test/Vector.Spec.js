@@ -2,9 +2,6 @@
  * Created by austin on 6/15/16.
  */
 
-
-"use strict";
-
 import chai from 'chai';
 
 import Vector from '../src/Dispersion/Vector';

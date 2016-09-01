@@ -10,7 +10,8 @@ import {integrate} from './utils';
 
 /**
  * Models a discrete release for constant atmospheric
- * http://www.cerc.co.uk/environmental-software/assets/data/doc_techspec/CERC_ADMS5_P10_01_P12_01.pdf pg 17
+ * pg 17
+ * http://www.cerc.co.uk/environmental-software/assets/data/doc_techspec/CERC_ADMS5_P10_01_P12_01.pdf
  * http://www.sciencedirect.com/science/article/pii/S0093641303000247
  */
 class GaussianPuff extends GaussianPlume {

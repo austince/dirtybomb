@@ -2,8 +2,6 @@
  * Created by austin on 6/15/16.
  */
 
-"use strict";
-
 import chai from 'chai';
 
 import Atmosphere from '../src/Dispersion/Atmosphere';

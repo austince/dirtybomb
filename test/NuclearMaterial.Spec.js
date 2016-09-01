@@ -2,8 +2,6 @@
  * Created by austin on 6/20/16.
  */
 
-"use strict";
-
 import chai from 'chai';
 const db = require('../dist/Dirtybomb');
 

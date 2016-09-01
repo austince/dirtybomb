@@ -5,11 +5,6 @@
 
 import GaussianPlume from './GaussianPlume';
 
-/*
-* Understanding Radioactive Aerosols and Their Measurement
-* https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
-* 
-* */
 
 /**
  * An extension (surprise surprise) on the Gaussian Plume to account for radioactive materials
