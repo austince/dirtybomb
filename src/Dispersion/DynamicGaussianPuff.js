@@ -195,9 +195,9 @@ class DynamicGaussianPuff extends GaussianPuff {
      */
     step(deltaT) {
         // update vertHoriz and vertDist
-        let x = this.distanceTraveled;
-        let stdYCoeffs = super._getStdYCoeffs(x);
-        let stdZCoeffs = super._getStdZCoeffs(x);
+        const x = this.distanceTraveled;
+        const stdYCoeffs = super._getStdYCoeffs(x);
+        const stdZCoeffs = super._getStdZCoeffs(x);
 
         // Update the Virtual horizontal and the vertical distance @see equation 15
         this._virtHoriz = Math.pow((this.stdY / stdYCoeffs.c), (1 / stdYCoeffs.d));
@@ -205,8 +205,8 @@ class DynamicGaussianPuff extends GaussianPuff {
 
         // Find the change in x and y directions
         // Todo: use Navier-Stokes equation solver to account for momentum @see equation 16
-        let deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
-        let deltaD = deltaDVec.abs();
+        const deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
+        const deltaD = deltaDVec.abs();
 
         // Update the standard deviations @see equation 17
         this._stdY = stdYCoeffs.c * Math.pow(this.virtHoriz + deltaD, stdYCoeffs.d);
@@ -231,16 +231,17 @@ class DynamicGaussianPuff extends GaussianPuff {
     getConcentration(x, y, z) {
         if (this.time == 0) return 0;
 
-        let stdY = this.stdY;
-        let stdZ = this.stdZ;
-        let H = this.effectiveSourceHeight;
+        const stdY = this.stdY;
+        const stdZ = this.stdZ;
+        const H = this.effectiveSourceHeight;
 
-        let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
-        let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
-        let c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
-        let d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
+        const a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
+        const b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
+        const c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
+        const d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
 
-        return a * b * c * d;
+        const conc = a * b * c * d;
+        return isNaN(conc) ? 0 : conc;
     }
 
 }

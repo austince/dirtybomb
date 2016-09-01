@@ -37,16 +37,19 @@
           /**
            * 
            * @type {number}
+           * @private
            */
           this._emissionRate = emissionRate;
           /**
            * 
            * @type {number}
+           * @private
            */
           this._height = height;
           /**
            * 
            * @type {number}
+           * @private
            */
           this._radius = radius;
           /**
@@ -58,13 +61,15 @@
           /**
            * 
            * @type {number}
+           * @private
            */
           this._temp = temperature;
           /**
            * 
            * @type {number}
+           * @private
            */
-          this.exitVel = exitVelocity;
+          this._exitVel = exitVelocity;
       }
 
       /**
@@ -77,6 +82,15 @@
 
       /**
        * 
+       * @param {number} rate - (g/s)
+       * @returns {Source}
+       */
+      setEmissionRate(rate) {
+          this._emissionRate = rate;
+          return this;
+      }
+      /**
+       * 
        * @returns {number}
        */
       get emissionRate() {
@@ -85,12 +99,31 @@
 
       /**
        * 
+       * @param {number} height
+       * @returns {Source}
+       */
+      setHeight(height) {
+          this._height = height;
+          return this;
+      }
+      /**
+       * 
        * @returns {number}
        */
       get height() {
           return this._height;
       }
 
+      /**
+       * 
+       * @param {number} radius
+       * @returns {Source}
+       */
+      setRadius(radius) {
+          this._radius = radius;
+          return this;
+      }
+      
       /**
        * 
        * @returns {number}
@@ -109,6 +142,16 @@
 
       /**
        * 
+       * @param {number} temp
+       * @returns {Source}
+       */
+      setTemperature(temp) {
+          this._temp = temp;
+          return this;
+      }
+      
+      /**
+       * 
        * @returns {number}
        */
       get temperature() {
@@ -117,10 +160,19 @@
 
       /**
        * 
+       * @param {number} velocity
+       * @returns {Source}
+       */
+      setExitVelocity(velocity) {
+          this._exitVel = velocity;
+          return this;
+      }
+      /**
+       * 
        * @returns {number}
        */
       get exitVelocity() {
-          return this.exitVel;
+          return this._exitVel;
       }
   }
 
@@ -131,160 +183,159 @@
    * https://evanw.github.io/lightgl.js/docs/vector.html
    */
 
-  /**
-   *
-   * @param x
-   * @param y
-   * @param z
-   * @constructor
-   */
-  function Vector(x, y, z) {
-      this.x = x || 0;
-      this.y = y || 0;
-      this.z = z || 0;
-  }
+  class Vector {
+      /**
+       *
+       * @param x
+       * @param y
+       * @param z
+       */
+      constructor(x, y ,z) {
+          this.x = x || 0;
+          this.y = y || 0;
+          this.z = z || 0;
+      }
 
-  Vector.prototype = {
       /**
        *
        * @returns {Vector}
        */
-      negative: function() {
+      negative(){
           return new Vector(-this.x, -this.y, -this.z);
-      },
+      }
       /**
        *
        * @param {Vector || number} v
        * @returns {Vector}
        */
-      add: function(v) {
+      add(v) {
           if (v instanceof Vector) return new Vector(this.x + v.x, this.y + v.y, this.z + v.z);
           else if (Array.isArray(v)) return Vector.fromArray(v).add(this);
           else return new Vector(this.x + v, this.y + v, this.z + v);
-      },
-      subtract: function(v) {
+      }
+      subtract(v) {
           if (v instanceof Vector) return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
           else if (Array.isArray(v)) return Vector.fromArray(v).subtract(this);
           else return new Vector(this.x - v, this.y - v, this.z - v);
-      },
-      multiply: function(v) {
+      }
+      multiply(v) {
           if (v instanceof Vector) return new Vector(this.x * v.x, this.y * v.y, this.z * v.z);
           else return new Vector(this.x * v, this.y * v, this.z * v);
-      },
-      divide: function(v) {
+      }
+      divide(v) {
           if (v instanceof Vector) return new Vector(this.x / v.x, this.y / v.y, this.z / v.z);
           else return new Vector(this.x / v, this.y / v, this.z / v);
-      },
-      equals: function(v) {
+      }
+      equals(v) {
           return this.x == v.x && this.y == v.y && this.z == v.z;
-      },
-      dot: function(v) {
+      }
+      dot(v) {
           return this.x * v.x + this.y * v.y + this.z * v.z;
-      },
-      cross: function(v) {
+      }
+      cross(v) {
           return new Vector(
-              this.y * v.z - this.z * v.y,
-              this.z * v.x - this.x * v.z,
-              this.x * v.y - this.y * v.x
+          this.y * v.z - this.z * v.y,
+          this.z * v.x - this.x * v.z,
+          this.x * v.y - this.y * v.x
           );
-      },
-      length: function() {
+      }
+      length() {
           return Math.sqrt(this.dot(this));
-      },
-      unit: function() {
+      }
+      unit() {
           return this.divide(this.length());
-      },
-      min: function() {
+      }
+      min() {
           return Math.min(Math.min(this.x, this.y), this.z);
-      },
-      max: function() {
+      }
+      max() {
           return Math.max(Math.max(this.x, this.y), this.z);
-      },
+      }
       /**
        *
        * @returns {number}
        */
-      abs: function() {
+      abs() {
           return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
-      },
-      toAngles: function() {
+      }
+
+      toAngles() {
           return {
               theta: Math.atan2(this.z, this.x),
               phi: Math.asin(this.y / this.length())
-          };
-      },
-      angleTo: function(a) {
+          }
+      }
+      angleTo(a) {
           return Math.acos(this.dot(a) / (this.length() * a.length()));
-      },
-      toArray: function(n) {
+      }
+      toArray(n) {
           return [this.x, this.y, this.z].slice(0, n || 3);
-      },
-      clone: function() {
+      }
+      clone() {
           return new Vector(this.x, this.y, this.z);
-      },
-      init: function(x, y, z) {
+      }
+      init(x, y, z) {
           this.x = x; this.y = y; this.z = z;
           return this;
       }
-  };
+  }
 
-
-  Vector.negative = function(a, b) {
+  Vector.negative = (a, b) => {
       b.x = -a.x; b.y = -a.y; b.z = -a.z;
       return b;
   };
-  Vector.add = function(a, b, c) {
+  Vector.add = (a, b, c) => {
       if (b instanceof Vector) { c.x = a.x + b.x; c.y = a.y + b.y; c.z = a.z + b.z; }
       else { c.x = a.x + b; c.y = a.y + b; c.z = a.z + b; }
       return c;
   };
-  Vector.subtract = function(a, b, c) {
+  Vector.subtract = (a, b, c) => {
       if (b instanceof Vector) { c.x = a.x - b.x; c.y = a.y - b.y; c.z = a.z - b.z; }
       else { c.x = a.x - b; c.y = a.y - b; c.z = a.z - b; }
       return c;
   };
-  Vector.multiply = function(a, b, c) {
+  Vector.multiply = (a, b, c) => {
       if (b instanceof Vector) { c.x = a.x * b.x; c.y = a.y * b.y; c.z = a.z * b.z; }
       else { c.x = a.x * b; c.y = a.y * b; c.z = a.z * b; }
       return c;
   };
-  Vector.divide = function(a, b, c) {
+  Vector.divide = (a, b, c) => {
       if (b instanceof Vector) { c.x = a.x / b.x; c.y = a.y / b.y; c.z = a.z / b.z; }
       else { c.x = a.x / b; c.y = a.y / b; c.z = a.z / b; }
       return c;
   };
-  Vector.cross = function(a, b, c) {
+  Vector.cross = (a, b, c) => {
       c.x = a.y * b.z - a.z * b.y;
       c.y = a.z * b.x - a.x * b.z;
       c.z = a.x * b.y - a.y * b.x;
       return c;
   };
-  Vector.unit = function(a, b) {
+  Vector.unit = (a, b) => {
       var length = a.length();
       b.x = a.x / length;
       b.y = a.y / length;
       b.z = a.z / length;
       return b;
   };
-  Vector.fromAngles = function(theta, phi) {
+  Vector.fromAngles = (theta, phi) => {
       return new Vector(Math.cos(theta) * Math.cos(phi), Math.sin(phi), Math.sin(theta) * Math.cos(phi));
   };
-  Vector.randomDirection = function() {
+  Vector.randomDirection = () => {
       return Vector.fromAngles(Math.random() * Math.PI * 2, Math.asin(Math.random() * 2 - 1));
   };
-  Vector.min = function(a, b) {
+  Vector.min = (a, b) => {
       return new Vector(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
   };
-  Vector.max = function(a, b) {
+  Vector.max = (a, b) => {
       return new Vector(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
   };
-  Vector.lerp = function(a, b, fraction) {
+  Vector.lerp = (a, b, fraction) => {
       return b.subtract(a).multiply(fraction).add(a);
   };
-  Vector.fromArray = function(a) {
+  Vector.fromArray = (a) => {
       return new Vector(a[0], a[1], a[2]);
   };
-  Vector.angleBetween = function(a, b) {
+  Vector.angleBetween = (a, b) => {
       return a.angleTo(b);
   };
 
@@ -489,12 +540,12 @@
        */
       static calculateGrade(skyCover, solarElevation, windSpeed, isNight) {
           let grade;
-          let windLevel = Atmosphere._getWindLevel(windSpeed);
+          const windLevel = Atmosphere._getWindLevel(windSpeed);
           if (isNight) {
-              let coverLevel = skyCover > .5 ? 0 : 1; // For night, just two columns
+              const coverLevel = skyCover > .5 ? 0 : 1; // For night, just two columns
               grade = NIGHT_GRADES[windLevel][coverLevel];
           } else {
-              let insolation = Atmosphere._getInsolationLevel(skyCover, solarElevation);
+              const insolation = Atmosphere._getInsolationLevel(skyCover, solarElevation);
               grade = DAY_GRADES[windLevel][insolation];
           }
           return grade;
@@ -660,7 +711,7 @@
        */
       getWindSpeedAt(height) {
           // Assumes ground wind speed was measured at 10m
-          let windProfile = this._setting === 'urban' ? 
+          const windProfile = this._setting === 'urban' ? 
               WIND_PROFILES[this.grade].urban : WIND_PROFILES[this.grade].rural;
           return this.windSpeed * Math.pow((height / 10), windProfile);
       }
@@ -799,7 +850,7 @@
        */
       _getStdYCoeffs(x) {
           let index;
-          let coeffs = STD_Y_COEFFS[this._atm.grade];
+          const coeffs = STD_Y_COEFFS[this._atm.grade];
           if (x < 10000) {
               index = 0;
           } else {
@@ -816,7 +867,7 @@
        * @returns {number} crosswind standard deviation at x meters downwind (m)
        */
       getStdY(x) {
-          let coeffs = this._getStdYCoeffs(x);
+          const coeffs = this._getStdYCoeffs(x);
           return coeffs.c * Math.pow(x, coeffs.d);
       }
 
@@ -828,7 +879,7 @@
        */
       _getStdZCoeffs(x) {
           let index;
-          let coeffs = STD_Z_COEFFS[this._atm.grade];
+          const coeffs = STD_Z_COEFFS[this._atm.grade];
           if (x < 500) {
               index = 0;
           } else if (x < 5000) {
@@ -848,7 +899,7 @@
        * @returns {number}
        */
       getStdZ(x) {
-          let coeffs = this._getStdZCoeffs(x);
+          const coeffs = this._getStdZCoeffs(x);
           return coeffs.a * Math.pow(x, coeffs.b);
       }
 
@@ -880,7 +931,7 @@
           if (this._manualEffSrcHeight) {
               return this._effSrcHeight;
           }
-          let deltaH = this.getMaxRise(0);
+          const deltaH = this.getMaxRise(0);
           this._effSrcHeight = this.source.height + deltaH;
           return this._effSrcHeight;
       }
@@ -920,7 +971,7 @@
               // Gets super funky, ugh science
 
               // Distance to Maximum Plume Rise
-              let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
+              const xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
               // Will use 0 if calculating from the source. Need to read more about this.
               if (x == 0 || x > 3.5 * xStar) {
                   x = xStar;
@@ -950,13 +1001,13 @@
        * @returns {number} micrograms / cubic meters
        */
       get maxConcentration() {
-          let x = this.maxConcentrationX;
-          let stdY = this.getStdY(x);
-          let stdZ = this.getStdZ(x);
-          let H = this.effectiveSourceHeight;
+          const x = this.maxConcentrationX;
+          const stdY = this.getStdY(x);
+          const stdZ = this.getStdZ(x);
+          const H = this.effectiveSourceHeight;
 
-          let a = (this.source.emissionRate * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
-          let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
+          const a = (this.source.emissionRate) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
+          const b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
 
           return a * b;
       }
@@ -967,11 +1018,11 @@
        */
       get maxConcentrationX() {
           // If unknown, set x to 5000 meters
-          let stdYCoeffs = this._getStdYCoeffs(5000);  // c , d
-          let stdZCoeffs = this._getStdZCoeffs(5000);  // a , b
-          let H = this.effectiveSourceHeight;
+          const stdYCoeffs = this._getStdYCoeffs(5000);  // c , d
+          const stdZCoeffs = this._getStdZCoeffs(5000);  // a , b
+          const H = this.effectiveSourceHeight;
 
-          let pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
+          const pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
           return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
       }
 
@@ -980,28 +1031,30 @@
        * Must be downwind
        * @param {number} x - Meters downwind of source, greater than 0
        * @param {number} y - Meters crosswind of source
-       * @param {number} z - Meters vertical of ground
+       * @param {number} [z=0] - Meters vertical of ground
        * @returns {number} micrograms / cubic meter
        *
        * @example
        * getConcentration(200, 300, 10)
        * Calculates at 200 meters downwind, 300 east, 10 high
        */
-      getConcentration(x, y, z) {
+      getConcentration(x, y, z = 0) {
           // First part of Gaussian equation 1 found on page 2
-          let stdY = this.getStdY(x);
-          let stdZ = this.getStdZ(x);
+          const stdY = this.getStdY(x);
+          const stdZ = this.getStdZ(x);
           // Effective stack _height
-          let H = this.effectiveSourceHeight;
-          let U = this.windSpeedAtSourceHeight;
+          const H = this.effectiveSourceHeight;
+          const U = this.windSpeedAtSourceHeight;
 
-          let a = this.source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
-          let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
-          let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
-          let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
+          const a = this.source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
+          const b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
+          const c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
+          const d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
           
           // Put it all together! get
-          return a * b * (c + d);
+          const conc = a * b * (c + d);
+          // return 0 if it's not a number
+          return isNaN(conc) ? 0 : conc;
       }
 
       /**
@@ -1051,7 +1104,8 @@
 
   /**
    * Models a discrete release for constant atmospheric
-   * http://www.cerc.co.uk/environmental-software/assets/data/doc_techspec/CERC_ADMS5_P10_01_P12_01.pdf pg 17
+   * pg 17
+   * http://www.cerc.co.uk/environmental-software/assets/data/doc_techspec/CERC_ADMS5_P10_01_P12_01.pdf
    * http://www.sciencedirect.com/science/article/pii/S0093641303000247
    */
   class GaussianPuff extends GaussianPlume {
@@ -1105,7 +1159,7 @@
        * @returns {number} - meters downwind
        */
       getCenterX(t) {
-          let windAtSource = this.windSpeedAtSourceHeight;
+          const windAtSource = this.windSpeedAtSourceHeight;
           return windAtSource * t;
           /*return integrate(0, t, () => {
               return windAtSource;
@@ -1117,22 +1171,23 @@
        * @override
        * @param {number} x - downwind (m)
        * @param {number} y - crosswind (m)
-       * @param {number} z - _height (m)
+       * @param {number} z - height (m)
        * @param {number} t - seconds from start
        * @returns {number}
        */
       getConcentration(x, y, z, t) {
-          let deltaD = this.getCenterX(t);
-          let stdY = this.getStdY(deltaD);
-          let stdZ = this.getStdZ(deltaD);
-          let H = this.effectiveSourceHeight;
+          const deltaD = this.getCenterX(t);
+          const stdY = this.getStdY(deltaD);
+          const stdZ = this.getStdZ(deltaD);
+          const H = this.effectiveSourceHeight;
 
-          let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
-          let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
-          let c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
-          let d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
+          const a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
+          const b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
+          const c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
+          const d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
 
-          return a * b * c * d;
+          const conc = a * b * c * d;
+          return isNaN(conc) ? 0 : conc;
       }
   }
 
@@ -1392,9 +1447,9 @@
        */
       step(deltaT) {
           // update vertHoriz and vertDist
-          let x = this.distanceTraveled;
-          let stdYCoeffs = super._getStdYCoeffs(x);
-          let stdZCoeffs = super._getStdZCoeffs(x);
+          const x = this.distanceTraveled;
+          const stdYCoeffs = super._getStdYCoeffs(x);
+          const stdZCoeffs = super._getStdZCoeffs(x);
 
           // Update the Virtual horizontal and the vertical distance @see equation 15
           this._virtHoriz = Math.pow((this.stdY / stdYCoeffs.c), (1 / stdYCoeffs.d));
@@ -1402,8 +1457,8 @@
 
           // Find the change in x and y directions
           // Todo: use Navier-Stokes equation solver to account for momentum @see equation 16
-          let deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
-          let deltaD = deltaDVec.abs();
+          const deltaDVec = this.atmosphere.windSpeedVec.multiply(deltaT);    // The change in distance from wind
+          const deltaD = deltaDVec.abs();
 
           // Update the standard deviations @see equation 17
           this._stdY = stdYCoeffs.c * Math.pow(this.virtHoriz + deltaD, stdYCoeffs.d);
@@ -1428,16 +1483,17 @@
       getConcentration(x, y, z) {
           if (this.time == 0) return 0;
 
-          let stdY = this.stdY;
-          let stdZ = this.stdZ;
-          let H = this.effectiveSourceHeight;
+          const stdY = this.stdY;
+          const stdZ = this.stdZ;
+          const H = this.effectiveSourceHeight;
 
-          let a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
-          let b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
-          let c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
-          let d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
+          const a = this.massReleased / (Math.pow(2 * Math.PI, 1.5) * Math.pow(stdY, 2) * stdZ);
+          const b = Math.exp(-0.5 * Math.pow(x / stdY, 2));
+          const c = Math.exp(-0.5 * Math.pow(y / stdY, 2));
+          const d = Math.exp(-0.5 * Math.pow((z - H) / stdZ, 2));
 
-          return a * b * c * d;
+          const conc = a * b * c * d;
+          return isNaN(conc) ? 0 : conc;
       }
 
   }
@@ -1581,7 +1637,7 @@
           
           
           if (this.weaponYield > 1000) {
-              console.warn("WARNING: this bomb library is mean for bombs weaponYields under 1000.");
+              console.warn("WARNING: this bomb library is meant for bombs weaponYields under 1000.");
           }
       }
 
@@ -1676,7 +1732,7 @@
        * @returns {number} - (m)
        */
       get cloudRadius() {
-          let mainRad = this._getMainCloudRadius();
+          const mainRad = this._getMainCloudRadius();
           if (this.weaponYield < 20) {
               return 0.5 * mainRad;
           }
@@ -1695,7 +1751,8 @@
       }
 
       /**
-       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 3
+       * equation 3
+       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
        * @param {number} r - distance from origin (m)
        * @returns {number} - pressure (atm)
        */
@@ -1708,30 +1765,33 @@
 
       /**
        * Velocity of gas in behind shock wave front
-       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 5.2
+       * equation 5.2
+       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
        * @param {number} r - distance from origin (m)
        * @returns {number} velocity (m/s)
        */
       getGasVelocity(r) {
-          let pressure = this.getOverpressureAt(r);
+          const pressure = this.getOverpressureAt(r);
           // Simplified for standard atmosphere
           return 243 * pressure / Math.sqrt(1 + 0.86 * pressure);
       }
 
       /**
        * Temperature of gas in shock wave front
-       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 5.3
+       * equation 5.3
+       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
        * @param {number} r - distance from origin (m)
        * @returns {number} temperature (K)
        */
       getGasTemp(r) {
-          let pressure = this.getOverpressureAt(r);
+          const pressure = this.getOverpressureAt(r);
           return this.atmosphere.temperature * (1 + pressure) * (7 + pressure) / (7 + 6 * pressure);
       }
 
       /**
        * Positive Shock Phase Duration
-       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 4
+       * equation 4
+       * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
        * @param {number} r - distance from origin (m)
        * @returns {number} duration (s)
        */
@@ -1918,12 +1978,6 @@
   }
 
   NuclearMaterial.PRESETS = ISOTOPES;
-
-  /*
-  * Understanding Radioactive Aerosols and Their Measurement
-  * https://books.google.com/books?id=bCjRtBX0MYkC&pg=PA280&lpg=PA280&dq=gaussian+decay+plume&source=bl&ots=oJbqk8OmIe&sig=GqzwcwVfbk_XUR6RztjSeVI0J20&hl=en&sa=X&ved=0ahUKEwih4OS7zpTNAhWq5oMKHeM_DyIQ6AEINjAF#v=onepage&q=gaussian%20decay%20plume&f=false
-  * 
-  * */
 
   /**
    * An extension (surprise surprise) on the Gaussian Plume to account for radioactive materials

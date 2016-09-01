@@ -78,7 +78,7 @@ class Bomb {
         
         
         if (this.weaponYield > 1000) {
-            console.warn("WARNING: this bomb library is mean for bombs weaponYields under 1000.");
+            console.warn("WARNING: this bomb library is meant for bombs weaponYields under 1000.");
         }
     }
 
@@ -173,7 +173,7 @@ class Bomb {
      * @returns {number} - (m)
      */
     get cloudRadius() {
-        let mainRad = this._getMainCloudRadius();
+        const mainRad = this._getMainCloudRadius();
         if (this.weaponYield < 20) {
             return 0.5 * mainRad;
         }
@@ -192,7 +192,8 @@ class Bomb {
     }
 
     /**
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 3
+     * equation 3
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} - pressure (atm)
      */
@@ -205,30 +206,33 @@ class Bomb {
 
     /**
      * Velocity of gas in behind shock wave front
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 5.2
+     * equation 5.2
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} velocity (m/s)
      */
     getGasVelocity(r) {
-        let pressure = this.getOverpressureAt(r);
+        const pressure = this.getOverpressureAt(r);
         // Simplified for standard atmosphere
         return 243 * pressure / Math.sqrt(1 + 0.86 * pressure);
     }
 
     /**
      * Temperature of gas in shock wave front
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 5.3
+     * equation 5.3
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} temperature (K)
      */
     getGasTemp(r) {
-        let pressure = this.getOverpressureAt(r);
+        const pressure = this.getOverpressureAt(r);
         return this.atmosphere.temperature * (1 + pressure) * (7 + pressure) / (7 + 6 * pressure);
     }
 
     /**
      * Positive Shock Phase Duration
-     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/ equation 4
+     * equation 4
+     * @see https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/
      * @param {number} r - distance from origin (m)
      * @returns {number} duration (s)
      */

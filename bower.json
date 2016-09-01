@@ -3,7 +3,7 @@
   "description": "A dirty bomb model",
   "main": "build/Dirtybomb.js",
   "authors": [
-    "<austin.cawley@gmail.com>"
+    "austin <austin.cawley@gmail.com>"
   ],
   "license": "ISC",
   "keywords": [

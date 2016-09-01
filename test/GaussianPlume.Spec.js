@@ -1,7 +1,6 @@
 /**
  * Created by austin on 6/8/16.
  */
-"use strict";
 
 import chai from 'chai';
 
@@ -17,8 +16,8 @@ describe('GaussianPlume', function() {
     let plume;
     
     it('should import correctly', () => {
-        let atm = new Atmosphere(10, 1, 65, 300);
-        let source = new Source(SourceType.POINT, 2, 150, 5, 400, 4);
+        const atm = new Atmosphere(10, 1, 65, 300);
+        const source = new Source(SourceType.POINT, 2, 150, 5, 400, 4);
         plume = new GaussianPlume(atm, source); 
     });
     
@@ -29,5 +28,23 @@ describe('GaussianPlume', function() {
 
     it('should calculate proper effective heights', () => {
 
+    });
+
+    describe('Concentration functions', () => {
+        it('should use ground level as default', () => {
+            plume.getConcentration(100, 100).should.be.equal(
+                plume.getConcentration(100, 100, 0)
+            );
+
+            plume.getConcentration(100, 100, 100).should.not.be.equal(
+                plume.getConcentration(100, 100)
+            )
+        });
+        
+        it('should be 0 for all 0 x', () => {
+           for (let y = -10000; y < 10000; y += 500) {
+               plume.getConcentration(0, y).should.be.equal(0);
+           } 
+        });
     });
 });

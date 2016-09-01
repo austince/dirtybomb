@@ -206,12 +206,12 @@ class Atmosphere {
      */
     static calculateGrade(skyCover, solarElevation, windSpeed, isNight) {
         let grade;
-        let windLevel = Atmosphere._getWindLevel(windSpeed);
+        const windLevel = Atmosphere._getWindLevel(windSpeed);
         if (isNight) {
-            let coverLevel = skyCover > .5 ? 0 : 1; // For night, just two columns
+            const coverLevel = skyCover > .5 ? 0 : 1; // For night, just two columns
             grade = NIGHT_GRADES[windLevel][coverLevel];
         } else {
-            let insolation = Atmosphere._getInsolationLevel(skyCover, solarElevation);
+            const insolation = Atmosphere._getInsolationLevel(skyCover, solarElevation);
             grade = DAY_GRADES[windLevel][insolation];
         }
         return grade;
@@ -377,7 +377,7 @@ class Atmosphere {
      */
     getWindSpeedAt(height) {
         // Assumes ground wind speed was measured at 10m
-        let windProfile = this._setting === 'urban' ? 
+        const windProfile = this._setting === 'urban' ? 
             WIND_PROFILES[this.grade].urban : WIND_PROFILES[this.grade].rural;
         return this.windSpeed * Math.pow((height / 10), windProfile);
     }

@@ -145,7 +145,7 @@ class GaussianPlume {
      */
     _getStdYCoeffs(x) {
         let index;
-        let coeffs = STD_Y_COEFFS[this._atm.grade];
+        const coeffs = STD_Y_COEFFS[this._atm.grade];
         if (x < 10000) {
             index = 0;
         } else {
@@ -162,7 +162,7 @@ class GaussianPlume {
      * @returns {number} crosswind standard deviation at x meters downwind (m)
      */
     getStdY(x) {
-        let coeffs = this._getStdYCoeffs(x);
+        const coeffs = this._getStdYCoeffs(x);
         return coeffs.c * Math.pow(x, coeffs.d);
     }
 
@@ -174,7 +174,7 @@ class GaussianPlume {
      */
     _getStdZCoeffs(x) {
         let index;
-        let coeffs = STD_Z_COEFFS[this._atm.grade];
+        const coeffs = STD_Z_COEFFS[this._atm.grade];
         if (x < 500) {
             index = 0;
         } else if (x < 5000) {
@@ -194,7 +194,7 @@ class GaussianPlume {
      * @returns {number}
      */
     getStdZ(x) {
-        let coeffs = this._getStdZCoeffs(x);
+        const coeffs = this._getStdZCoeffs(x);
         return coeffs.a * Math.pow(x, coeffs.b);
     }
 
@@ -226,7 +226,7 @@ class GaussianPlume {
         if (this._manualEffSrcHeight) {
             return this._effSrcHeight;
         }
-        let deltaH = this.getMaxRise(0);
+        const deltaH = this.getMaxRise(0);
         this._effSrcHeight = this.source.height + deltaH;
         return this._effSrcHeight;
     }
@@ -266,7 +266,7 @@ class GaussianPlume {
             // Gets super funky, ugh science
 
             // Distance to Maximum Plume Rise
-            let xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
+            const xStar = F < 55 ? 14 * Math.pow(F, 0.625) : 34 * Math.pow(F, .4);
             // Will use 0 if calculating from the source. Need to read more about this.
             if (x == 0 || x > 3.5 * xStar) {
                 x = xStar;
@@ -296,13 +296,13 @@ class GaussianPlume {
      * @returns {number} micrograms / cubic meters
      */
     get maxConcentration() {
-        let x = this.maxConcentrationX;
-        let stdY = this.getStdY(x);
-        let stdZ = this.getStdZ(x);
-        let H = this.effectiveSourceHeight;
+        const x = this.maxConcentrationX;
+        const stdY = this.getStdY(x);
+        const stdZ = this.getStdZ(x);
+        const H = this.effectiveSourceHeight;
 
-        let a = (this.source.emissionRate * 1000000) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
-        let b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
+        const a = (this.source.emissionRate) / (Math.PI * stdY * stdZ * this.windSpeedAtSourceHeight);
+        const b = Math.exp((-0.5) * Math.pow(H / stdZ, 2));
 
         return a * b;
     }
@@ -313,11 +313,11 @@ class GaussianPlume {
      */
     get maxConcentrationX() {
         // If unknown, set x to 5000 meters
-        let stdYCoeffs = this._getStdYCoeffs(5000);  // c , d
-        let stdZCoeffs = this._getStdZCoeffs(5000);  // a , b
-        let H = this.effectiveSourceHeight;
+        const stdYCoeffs = this._getStdYCoeffs(5000);  // c , d
+        const stdZCoeffs = this._getStdZCoeffs(5000);  // a , b
+        const H = this.effectiveSourceHeight;
 
-        let pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
+        const pt1 = (stdZCoeffs.b * Math.pow(H, 2)) / (Math.pow(stdZCoeffs.a, 2) * (stdYCoeffs.d + stdZCoeffs.b));
         return Math.pow(pt1, (1 / (2 * stdZCoeffs.b)));
     }
 
@@ -326,28 +326,30 @@ class GaussianPlume {
      * Must be downwind
      * @param {number} x - Meters downwind of source, greater than 0
      * @param {number} y - Meters crosswind of source
-     * @param {number} z - Meters vertical of ground
+     * @param {number} [z=0] - Meters vertical of ground
      * @returns {number} micrograms / cubic meter
      *
      * @example
      * getConcentration(200, 300, 10)
      * Calculates at 200 meters downwind, 300 east, 10 high
      */
-    getConcentration(x, y, z) {
+    getConcentration(x, y, z = 0) {
         // First part of Gaussian equation 1 found on page 2
-        let stdY = this.getStdY(x);
-        let stdZ = this.getStdZ(x);
+        const stdY = this.getStdY(x);
+        const stdZ = this.getStdZ(x);
         // Effective stack _height
-        let H = this.effectiveSourceHeight;
-        let U = this.windSpeedAtSourceHeight;
+        const H = this.effectiveSourceHeight;
+        const U = this.windSpeedAtSourceHeight;
 
-        let a = this.source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
-        let b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
-        let c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
-        let d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
+        const a = this.source.emissionRate / (2 * Math.PI * stdY * stdZ * U);
+        const b = Math.exp(-1 * Math.pow(y, 2) / (2 * Math.pow(stdY, 2)));
+        const c = Math.exp(-1 * Math.pow(z - H, 2) / (2 * Math.pow(stdZ, 2)));
+        const d = Math.exp(-1 * Math.pow(z + H, 2) / (2 * Math.pow(stdZ, 2)));
         
         // Put it all together! get
-        return a * b * (c + d);
+        const conc = a * b * (c + d);
+        // return 0 if it's not a number
+        return isNaN(conc) ? 0 : conc;
     }
 
     /**

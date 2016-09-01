@@ -1,5 +1,6 @@
 # dirtybomb 
-[![Build Status][buildBadge]][travis] [![Doc Status][docsBadge]][esdocs]
+[![Build Status][buildBadge]][travis] 
+[![Coverage Status][covBadge]][coveralls] [![Doc Status][docsBadge]][esdocs]
 [![npm][npmBadge]][npm] ![License][licenseBadge]  
 Stevens Summer Scholars Research Project under [Dr. Alex Wellerstein](http://blog.nuclearsecrecy.com/).
 The research aims to create a client-side library to model the impact of a dirty bomb.  
@@ -12,16 +13,16 @@ __Use in node:__ use the rolled up files in the dist/ directory. It has been bab
 Currently writing tests and then moving towards visualization.  
 
 ## Goals  
-- Dispersion Model
-- Radioactive release Model
-- Visualization Prototype
+- [x] Dispersion Model 
+- [x] Radioactive release Model 
+- [x] Visualization Prototype
 
 ## Building  
 Loosely trying to base this on how d3 manages its modularity.  
 Builds to build/ and dist/  
 - Requires node / babel / all that jazz
-- Run using npm: `npm run build`  
-
+- `npm install` then...
+- Build using: `npm run build`  
 
 ## Testing
 test/  
@@ -31,12 +32,24 @@ Using chai and mocha
 ## Documentation
 Using esdoc. You should be able to create some nice documentation yourself with an easy command!
 - `npm run doc`
-- `npm servedocs` to locally host them
+- `npm servedocs` to locally host them (usually on port 8080)
 
+<a name="resources" />
 ## Resources
-- [Understanding Radioactive Aerosols and Their Measurement][URAaTM]
-- [CALPUFF Modeling System][calpuff]
 
+### Plume
+- [Understanding Radioactive Aerosols and Their Measurement][URAaTM]
+- [Science Direct][SciDir]
+- [Plume/Puff Spread and Mean Concentration](http://www.cerc.co.uk/environmental-software/assets/data/doc_techspec/CERC_ADMS5_P10_01_P12_01.pdf)
+
+### Bomb
+- [Metabunk](https://www.metabunk.org/attachments/blast-effect-calculation-1-pdf.2578/)
+- [TNT Equivalent](https://en.wikipedia.org/wiki/TNT_equivalent)
+- [CISAC Model](http://cisac.fsi.stanford.edu/sites/default/files/geist_2014_cv.pdf)
+
+<!-- Links -->
+[covBadge]: https://coveralls.io/repos/github/austincawley/dirtybomb/badge.svg?branch=master
+[coveralls]: https://coveralls.io/github/austincawley/dirtybomb?branch=master
 [docsBadge]: https://doc.esdoc.org/github.com/austincawley/dirtybomb/badge.svg
 [esdocs]: https://doc.esdoc.org/github.com/austincawley/dirtybomb/
 [buildBadge]: https://travis-ci.org/austincawley/dirtybomb.svg?branch=master
@@ -46,5 +59,4 @@ Using esdoc. You should be able to create some nice documentation yourself with 
 [npmBadge]: https://img.shields.io/npm/v/dirtybomb.svg
 [npm]: https://www.npmjs.com/package/dirtybomb
 [URAaTM]: https://goo.gl/ZqFHiE
-[calpuff]: http://www.src.com/
-[3]: http://www.sciencedirect.com/science/article/pii/S0093641303000247
+[SciDir]: http://www.sciencedirect.com/science/article/pii/S0093641303000247

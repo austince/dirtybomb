@@ -5,8 +5,6 @@ import chai from 'chai';
 
 import Bomb from '../src/Bomb';
 
-"use strict";
-
 chai.should();
 
 describe('Bomb', function() {

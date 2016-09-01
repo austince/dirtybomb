@@ -9,110 +9,35 @@
 "use strict";
 
 import gulp from 'gulp';
+import header from 'gulp-header';
 import sourcemaps from 'gulp-sourcemaps';
-import rollup from 'gulp-rollup';
-import babel from 'gulp-babel';
+import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
-import util from 'gulp-util';
+import jetpack from 'fs-jetpack';
 
-const jetpack = require('fs-jetpack');
-const minify = require('gulp-minify');
-const  exec = require('child_process').exec;
-
-const karmaServer = require('karma').Server;
+const pkg = require('./package.json');
 const buildDir = jetpack.cwd('./build');
 const distDir = jetpack.cwd('./dist');
+
+const banner = ['/*!\n',
+  ' * <%= pkg.title %> v<%= pkg.version %> (<%= pkg.homepage %>)\n',
+  ' * Copyright 2016-' + (new Date()).getFullYear(), ' <%= pkg.author %>\n',
+  ' * Licensed under <%= pkg.license.type %> (<%= pkg.license.url %>)\n',
+  ' */\n',
+  ''
+].join('');
 
 gulp.task('clean', function() {
     buildDir.dirAsync('.', {empty: true});
     return distDir.dirAsync('.', {empty: true});
 });
 
-/*
-gulp.task('compileGaussian', ['clean'], function(cb) {
-    /!*rollup({
-        entry: 'src/Dispersion/Dispersion.js',
-        plugins: [
-            babel({
-                exclude: 'node_modules/!**'
-            })
-        ]
-    }).then(function(bundle) {
-        "use strict";
-        bundle.write({
-            dest: 'dist/Dispersion.js',
-            sourceMap: true
-        })
-    });*!/
-    /!*exec('rollup -f umd -n gaussianPlume -o dist/Dispersion.js -- src/Dispersion/Dispersion.js',
-        {cwd: __dirname}, 
-        function(error, stdout, stderr) {
-            if (error) {
-                cb(error);
-            }
-    });*!/
-});
-
-gulp.task('compileDirty', ['clean'], function(cb) {
-    /!*gulp.src('src/index.js')
-        .pipe(rollup({
-            sourceMap: true,
-            format: 'iife',
-            plugins: [
-                rollupIncludePaths(includePathOptions)
-            ]
-        }))
-        .pipe(babel())
-        .on('error', util.log)
-        .pipe(header(headerBanner))
-        .pipe(rename('bundle.js'))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('dist/js'));*!/
-
-
-    var rolled = gulp.src('index.js')
-        .pipe(rollup({
-            sourceMap: true,
-            format: 'umd'
-        }));
-    var transpiled = rolled.pipe(babel())
-        .on('error', function(error) {
-            console.log(error);
-        });
-
-    var mapped = transpiled.pipe(sourcemaps.write('.'))
-
-    var written = mapped.pipe(gulp.dest('dist'));
-
-    return written;
-    
-    /!*exec('rollup -f umd -n dirtybomb -o dist/Dirtybomb.js -- index.js',{cwd: __dirname}, function(error, stdout, stderr) {
-        if (error) {
-            cb(error);
-        }
-    });*!/
-});
-*/
-
-/**
- * 
- */
-gulp.task('compress', ['compile'], () => {
-    return gulp.src(distDir.path())
-        .pipe(minify({
-            ext: {
-                src: '.js',
-                min: '.min.js'
-            },
-            ignoreFiles: []
-        }))
-        .pipe(gulp.dest('dist'))
-});
-
-
-gulp.task('docs', () => {
-    
-});
-
-gulp.task('default', () => {
+gulp.task('minify-dist', () => {
+   return gulp.src('dist/Dirtybomb.js')
+     .pipe(sourcemaps.init())
+     .pipe(uglify())
+     .pipe(header(banner, { pkg: pkg }))
+     .pipe(rename({ suffix: '.min' }))
+     .pipe(sourcemaps.write())
+     .pipe(gulp.dest('dist'))
 });

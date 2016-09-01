@@ -2,8 +2,6 @@
  * Created by austin on 6/15/16.
  */
 
-"use strict";
-
 import chai from 'chai';
 
 import Atmosphere from '../src/Dispersion/Atmosphere';
@@ -20,8 +18,8 @@ describe('GaussianPuff', function() {
     
     describe('Constructor', () => {
         it('should import correctly', () => {
-            let atm = new Atmosphere(10, 1, 65, 300);
-            let source = new Source(SourceType.POINT, 2, 150, 5, 400, 4);
+            const atm = new Atmosphere(10, 1, 65, 300);
+            const source = new Source(SourceType.POINT, 2, 150, 5, 400, 4);
             puff = new GaussianPuff(atm, source, 20);
         });
     });
@@ -43,8 +41,14 @@ describe('GaussianPuff', function() {
     
     describe('Concentration functions', () => {
         it('should have 0 concentration before release', () => {
-            isNaN(puff.getConcentration(0, 0, 0, 0)).should.be.true;
+            puff.getConcentration(0, 0, 0, 0).should.be.equal(0);
             puff.getConcentration(0, 0, 0, 10).should.be.above(0);
+        });
+
+        it('should be 0 for all 0 x', () => {
+            for (let y = -10000; y < 10000; y += 500) {
+                puff.getConcentration(0, y).should.be.equal(0);
+            }
         });
     });
 });

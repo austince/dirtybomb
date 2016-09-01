@@ -31,16 +31,19 @@ class Source {
         /**
          * 
          * @type {number}
+         * @private
          */
         this._emissionRate = emissionRate;
         /**
          * 
          * @type {number}
+         * @private
          */
         this._height = height;
         /**
          * 
          * @type {number}
+         * @private
          */
         this._radius = radius;
         /**
@@ -52,13 +55,15 @@ class Source {
         /**
          * 
          * @type {number}
+         * @private
          */
         this._temp = temperature;
         /**
          * 
          * @type {number}
+         * @private
          */
-        this.exitVel = exitVelocity;
+        this._exitVel = exitVelocity;
     }
 
     /**
@@ -71,6 +76,15 @@ class Source {
 
     /**
      * 
+     * @param {number} rate - (g/s)
+     * @returns {Source}
+     */
+    setEmissionRate(rate) {
+        this._emissionRate = rate;
+        return this;
+    }
+    /**
+     * 
      * @returns {number}
      */
     get emissionRate() {
@@ -79,12 +93,31 @@ class Source {
 
     /**
      * 
+     * @param {number} height
+     * @returns {Source}
+     */
+    setHeight(height) {
+        this._height = height;
+        return this;
+    }
+    /**
+     * 
      * @returns {number}
      */
     get height() {
         return this._height;
     }
 
+    /**
+     * 
+     * @param {number} radius
+     * @returns {Source}
+     */
+    setRadius(radius) {
+        this._radius = radius;
+        return this;
+    }
+    
     /**
      * 
      * @returns {number}
@@ -103,6 +136,16 @@ class Source {
 
     /**
      * 
+     * @param {number} temp
+     * @returns {Source}
+     */
+    setTemperature(temp) {
+        this._temp = temp;
+        return this;
+    }
+    
+    /**
+     * 
      * @returns {number}
      */
     get temperature() {
@@ -111,10 +154,19 @@ class Source {
 
     /**
      * 
+     * @param {number} velocity
+     * @returns {Source}
+     */
+    setExitVelocity(velocity) {
+        this._exitVel = velocity;
+        return this;
+    }
+    /**
+     * 
      * @returns {number}
      */
     get exitVelocity() {
-        return this.exitVel;
+        return this._exitVel;
     }
 }
 
